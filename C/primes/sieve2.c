@@ -8,6 +8,7 @@ int main(void){
 
 long next_j(long array_size, long start, bool *primes);
 long last = 0;
+
 long array_size = 200000000; // find primes up to this number
 long upper_bound = 0; // variable to control loop iterations
 long total_primes = 0; // count of total primes found
@@ -52,9 +53,10 @@ printf("upper_bound: %d\n", upper_bound);
 
 
 for(long i = 2; i <= upper_bound; i++){
-    last = next_j(array_size, i, primes);
-    i = last;
-    // printf("i: %d\n", i);
+    // printf("primes[i]: %d   %d\n",i, primes[i]);
+    if(!primes[i]){
+        continue;
+    }
     for(long j = i * i; j < array_size; j += i){
         // printf("j: %d\n", j);
         if(primes[j] != false) {
