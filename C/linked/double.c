@@ -59,9 +59,9 @@ int main (void){
     for(int i = 0; i < 10; i++){
         node_insertion(i + 1, temp);
     };
-    for(int i = 0; i < 10; i++){
-        node_insertion(i + 1, temp);
-    };
+    // for(int i = 0; i < 10; i++){
+    //     node_insertion(i + 1, temp);
+    // };
 // find node of a certain data value
     
 
