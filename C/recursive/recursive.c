@@ -16,7 +16,7 @@ int count_down(int x){
 
 int main(void){
 
-int iterations = 3;
+int iterations = 2;
 
 count_down(iterations);
 
