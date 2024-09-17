@@ -4,7 +4,7 @@
 int main (void)
 {
     FILE *fptr;
-    char buffer[1024];
+    char buffer[10];
 
     fptr = fopen("my_text_file.txt", "r");
     if(fptr != NULL){

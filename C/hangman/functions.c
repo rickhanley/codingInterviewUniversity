@@ -13,7 +13,7 @@
 //                          word_selector
 //
 // returns a string (char *) of a word chosen at random from the words in the 
-// file
+// minlettersix.txt file
 //
 //
 // ****************************************************************************
@@ -38,7 +38,7 @@ char *word_selector(void){
 
     rewind(fptr); // rewind to beginning of file
     
-    // get a randome number in a larger range using bit shifting
+    // get a random number in a larger range using bit shifting
     // rand() MAX SIZE is 32767
     struct timeval tv;
     gettimeofday(&tv, NULL);  // Get current time including microseconds
@@ -58,35 +58,55 @@ char *word_selector(void){
     fclose(fptr); // close the file
     
     // copy the word to chosen
-    char *chosen = malloc(strlen(selected_word));
+    char *chosen = malloc(strlen(selected_word) + 1);
     strcpy(chosen, selected_word);
 
     return chosen; // return the chosen word
-
 };
 
-// check if the game is won
+//*****************************************************************************
+//                          print_game
+//
+// Provides a status update to the user. Prints the array of already
+// used letters and also the numbers guesses left for the user 
+//
+//
+// ****************************************************************************
 
 int print_game(int *remaining_guesses, int *remaining_letters, char *used_letters){
     
-    printf("*****************************\n");
-    printf("%d letter word\n", *remaining_letters);
+    // printf("*****************************\n");
+    // printf("%d letter word\n", *remaining_letters);
     if(used_letters[0] != '\0'){
     printf("Used Letters: ");
+
+    // loop over used_letters and print those characters which are not \0
+    // i.e. any character already used for a guess
+
     for(int i = 0; i < 26; i++){
             if(used_letters[i] != '\0'){
                 printf("%c ", used_letters[i]);
+                
             };
         };
+        printf("\n"); 
     };
-    printf("\n"); 
+
+    
     printf("Remaining guesses: %d\n", *remaining_guesses);
+    printf("*****************************");
     printf("\n");
 
     return 0;
 };
-
-// returns false if letter entered hasn't been used before, true if it has
+//*****************************************************************************
+//                          repeated_use_check
+//
+// Returns true if the letter is in the used_letters array
+// i.e. has already been chosen at some point and stored
+//
+//
+// ****************************************************************************
 bool repeated_use_check(char guess, char *used_letters){
     // printf("Comparing guess: %c\n", guess);
     for(int i = 0; i < 26; i++){
@@ -101,9 +121,13 @@ bool repeated_use_check(char guess, char *used_letters){
 // and checks if the letter has been used previously
 
 char validate_guess(char guess, char *used_letters){
-        while(!isalpha(tolower(guess))){
+        while(isalpha(guess) == 0){
             printf("Enter a letter: ");
                 scanf(" %c", &guess);
+                if(isalpha(guess) == 0){
+                    continue;
+                }
+            printf("\n*****************************\n");
             if(repeated_use_check(guess, used_letters) == false){
                 for(int i = 0; i < 26; i++){
                     if(used_letters[i] == '\0'){
@@ -114,7 +138,7 @@ char validate_guess(char guess, char *used_letters){
                 continue;
             }
             else {
-                printf("Letter already used:\n");
+                printf("Letter already picked. Choose again\n");
                 return('\0');
             };
         };        
@@ -122,7 +146,7 @@ char validate_guess(char guess, char *used_letters){
 };
 
 // checks if the letter is in the word
-int guess_check(char guess, int word_length, char *random_word, char *game_array, int *remaining_letters, char *used_letters, int *remaining_guesses){
+int guess_check(char guess, int word_length, char *random_word, char *game_array, int *remaining_letters, int *remaining_guesses){
     // printf("Remaining guesses receive check: %d\n", *remaining_guesses);
     bool match_flag = false;
     for(int i = 0; i < word_length; i++){
@@ -130,10 +154,9 @@ int guess_check(char guess, int word_length, char *random_word, char *game_array
             game_array[i] = guess;
             (*remaining_letters)--;
             match_flag = true;
-            printf("remaining letters: %d\n", *remaining_letters);
         };
-        
     };
+    
     if(match_flag == false){
         // printf("No Match - remaining_guesses should decrememnt %d\n", *remaining_guesses);
         *remaining_guesses = *remaining_guesses - 1;
@@ -151,6 +174,7 @@ int guess_check(char guess, int word_length, char *random_word, char *game_array
             printf(" ");
         };
     };
-    printf("\n\n\n");
+    printf("\nremaining letters: %d\n", *remaining_letters);
+    printf("\n");
 };
 
