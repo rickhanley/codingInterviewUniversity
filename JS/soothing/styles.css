@@ -1,0 +1,21 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: rgb(255, 255, 255);
+}
+
+.tiles-container {
+    display: grid;
+    grid-template-columns: repeat(16, 60px);
+    grid-template-rows: repeat(9, 60px);
+    gap: 4px; /* Adjust the gap between the squares if needed */
+}
+
+.tile {
+    display: flex;
+    border: px solid #333; /* Optional: to make the squares more defined */
+    border-radius: 6px;
+}

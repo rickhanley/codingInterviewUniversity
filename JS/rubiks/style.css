@@ -1,0 +1,67 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.basic{
+    font-family: roboto;
+    font-weight: 700;
+    font-style: bold;
+    font-size: 3rem;
+}
+
+.tiles-container {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+    gap: 4px; /* Adjust the gap between the squares if needed */
+}
+
+.tile {
+    background-color: rgb(100, 100, 255);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: roboto;
+    font-size: 24px;
+    font-weight: bold;
+    border: 4px solid #333; /* Optional: to make the squares more defined */
+    border-radius: 10px;
+}
+
+.red {
+    background-color: red;
+}
+
+.yellow {
+    background-color: yellow;
+}
+
+.orange {
+    background-color: orange;
+}
+
+.blue {
+    background-color: blue;
+}
+
+.white {
+    background-color: white;
+}
+
+.green {
+    background-color: green;
+}
