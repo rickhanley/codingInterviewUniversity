@@ -124,10 +124,11 @@ char validate_guess(char guess, char *used_letters){
         while(isalpha(guess) == 0){
             printf("Enter a letter: ");
                 scanf(" %c", &guess);
+                while (getchar() != '\n');
                 if(isalpha(guess) == 0){
                     continue;
                 }
-            printf("\n*****************************\n");
+            printf("\n**********results*************\n");
             if(repeated_use_check(guess, used_letters) == false){
                 for(int i = 0; i < 26; i++){
                     if(used_letters[i] == '\0'){

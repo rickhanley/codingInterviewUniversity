@@ -42,12 +42,17 @@ int main(void){
             printf("Game loop - remaining guesses: %d\n", remaining_guesses);
             if(remaining_guesses == 0 && remaining_letters > 0){
                 game_over = true;
-                printf("Game Over - out of guesses!\n");
-                printf("Word was: %s\n", random_word);
+                printf("\033[31m*******************************************\033[0m\n");
+                printf("\033[31m********Game Over - out of guesses!********\033[0m\n");
+                printf("\033[31m*******************************************\033[0m\n\n");
+                printf("\033[31m* Word was: %s\n\033[0m\n", random_word);
+
             };
             if(remaining_letters == 0){
                 game_over = true;
-                printf("You won!\n");
+                printf("\033[32m******************************************\033[0m\n");
+                printf("\033[32m**              You won!                **\033[0m\n");
+                printf("\033[32m******************************************\033[0m\n");
             };
         };
     };

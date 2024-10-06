@@ -48,7 +48,7 @@ int main(void){
 
     printf("sizeof(node)%d\n", sizeof(node));
 
-    int list_length = 5;
+    int list_length = 20;
     // for loop to create to some nodes, 5 in this case
 
     for(int i = 0; i < list_length; i++){
@@ -77,15 +77,54 @@ int main(void){
             head = n;
         }
         // list traversal
-        printf("i: %d\n", i);
-        printf("next: %p\n", n->next);
-        printf("head: %p\n", head);
+        printf("i: %d   %p\n", n->number, n-> next);
+        // printf("next: %p\n", n->next);
+        // printf("head: %p\n", head);
     }
     // loop to print the enirety of the list
-    node *head_f = head;
-    while (head_f != NULL){
-        printf("contents of node: %d\n", head_f->number);
-        head_f = head_f->next; 
+    // reverse the list here
+    // step through the list
+    // get the pointer to the next node from the one the head is currently pointing to
+    // store that in a temp
+    // head->next gets NULL - the pointer in head now points to null (it's now the end)
+    // head = temp, head is now the address
+
+    // ******************** Linked list reversal logic ************************
+    //
+    // 1. Create THREE node variables to handle the work of reversing the links
+    // 2. Use a while loop to proceed through the list
+    // 3. only update the head at the end 
+    //
+    // ************************************************************************
+    
+    node* prev = NULL;
+    node* current = head; // copies head, thereby leaving head as is
+    node* next = NULL;
+
+    while (current != NULL) {
+        next = current->next;   // next gets the current->next address i.,e. the
+                                // pointer to the next node
+
+        current->next = prev;   // current->next now is overwritten with prev
+                                // NULL on 1st iteration. Now the new end node
+                                // is created
+
+        prev = current;         // prev now gets the address of current i.e.
+                                // as we progress to next node, prev has the
+                                // address of the last one looked at - this
+                                // will be the address the next node needs to
+                                // point in the other direction
+
+        current = next;         // current gets the next node address
+
+                                // BACK TO THE TOP
+    }
+
+    head = prev;
+
+    while(head != NULL){
+        printf("%d\n", head->number);
+        head = head->next;
     }
 
     // printf("head->number: %d\n", head->number);

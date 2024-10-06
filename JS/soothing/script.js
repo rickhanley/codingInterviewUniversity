@@ -31,7 +31,7 @@ const tiles = document.querySelectorAll(".tile");
 tiles.forEach(tile => {
     tile.addEventListener('mouseover', function(){
             tile.style.backgroundColor = getRandomColour();
-            console.log(`Tile ${tile.id} tocuhed`)
+            console.log(`Tile ${tile.id} touched`)
         }
     );
 });
@@ -64,4 +64,4 @@ setInterval(function(){
     let tile = getTile();
     console.log("3");
     tile.style.backgroundColor = getRandomColour();
-},wait_time3 = getTime(50));
+},wait_time3 = getTime(200));

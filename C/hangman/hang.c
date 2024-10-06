@@ -2,11 +2,6 @@
 // 
 // Simple hangman game implementation
 // 
-
-
-
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,6 +12,7 @@
 #define GUESSES 10
 
 int main(void){
+    
 
     char *random_word = word_selector(); // pointer to the random word selected
     char validated_guess = '\0'; // initilaise validate guess
@@ -43,6 +39,8 @@ int main(void){
     // initiliase guess
     char guess = ' ';
     printf("*****************************\n");
+    printf("**********Hangman************\n");
+    printf("*****************************\n\n");
     printf("A word of length: %d\n", word_length);
     // game loop - run while game over is false i.e. NOT won
     while(game_over == false){
@@ -57,12 +55,17 @@ int main(void){
         if(remaining_guesses == 0){
             // printf("remaing guesses == 0\n");
             game_over = true;
-            printf("\033[31mGame Over - out of guesses!\033[0m\n");
-            printf("Word was: %s\n", random_word);
+            printf("\033[31m*******************************************\033[0m\n");
+            printf("\033[31m********Game Over - out of guesses!********\033[0m\n");
+            printf("\033[31m*******************************************\033[0m\n\n");
+            printf("\033[31m* Word was: %s\n\033[0m\n", random_word);
+            
         };
         if(remaining_letters == 0){
             game_over = true;
-            printf("\033[32mYou Won!\033[0m\n");
+            printf("\033[32m******************************************\033[0m\n");
+            printf("\033[32m**              You won!                **\033[0m\n");
+            printf("\033[32m******************************************\033[0m\n");
         };
     };
 // free the malloc'd space for random_word
