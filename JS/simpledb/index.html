@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+
+    <h1>Edit Task</h1>
+    <form id="taskForm">
+        <div>
+            <label for="mainTask">Main Task:</label>
+            <input type="text" id="mainTask" name="mainTask" required>
+        </div>
+
+        <div id="subtasksContainer">
+            <h2>Subtasks</h2>
+            <div class="subtask">
+                <input type="text" name="subtask[]" placeholder="Subtask 1" required>
+                <button type="button" class="remove-btn" onclick="removeSubtask(this)">Remove</button>
+            </div>
+        </div>
+
+        <button type="button" id="addSubtaskBtn">Add Subtask</button>
+        <br><br>
+        <button type="submit">Save Task</button>
+    </form>
+    <script src="script.js"></script>
+</body>
+</html>
