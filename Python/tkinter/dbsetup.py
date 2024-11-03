@@ -65,7 +65,7 @@ def insert_subtask(heading_id, subtask):
 create_database()
 
 for i in range(1, 16):
-    insert_heading(f"Task Heading sdahh sdaf hhasduih askjdhuhir fndflkjASD F NFDSL Jsdjf DSF Isudh dsfjsdfhj dsfauhf pasd fasdfhipauhdsf dfhajhdiu da dhfaduishf dsf aiudshfau dah dsfhau dhf ahd fausdfai sdfahdhssd  fahsudihfaiudshfadsiufh aiud sfa dsif aif dai h {i}", 0, "3-11-2024")  # Adding a heading
+    insert_heading(f"Task Heading {i}", 0, "3-11-2024")  # Adding a heading
 
 # Assuming the ID of 'Project A' is 1 (the first entry), add subtasks for it
 

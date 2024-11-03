@@ -13,6 +13,10 @@ today = datetime.datetime.now()
 
 # ----------------------- Modal setup ----------------------------------
 
+def delete_field(entry, minus_button):
+    entry.destroy()         # Remove the entry field
+    minus_button.destroy()  # Remove the minus button
+
 def open_modal(heading_id):
     modal = tk.Toplevel(window)
     modal.title("Subtasks")
@@ -26,7 +30,9 @@ def open_modal(heading_id):
     
     if results_set:
         # heading = tk.Label(modal, text=f"{}")
-        entry = tk.Entry(modal)
+        label = tk.Label(modal, text="Main task", font=("Helvetica", 16, "bold"))
+        label.pack()
+        entry = tk.Entry(modal, width=40)
         entry.insert(0, results_set[0][1])
         entry.pack(pady=5)
         
@@ -35,9 +41,19 @@ def open_modal(heading_id):
         for index, subtask in enumerate(subtask_list):
             label = tk.Label(modal, text=f"Step {index + 1}")
             label.pack(pady=5)
-            entry = tk.Entry(modal)
+            
+            # Create a frame to hold the entry and the minus button
+            frame = tk.Frame(modal)
+            frame.pack(pady=5)
+
+            # Create the entry field
+            entry = tk.Entry(frame, width=30)
             entry.insert(0, subtask)
-            entry.pack(pady=5)
+            entry.pack(side="left", padx=(0, 5))  # Add padding to the right of the entry
+
+            # Create the minus button
+            minus_button = tk.Button(frame, text="-", font=("Helvetica", 10, "bold"), padx=2, pady=1)
+            minus_button.pack(side="left")
         
         plus_button = tk.Button(modal, text="+", font=("Helvetica", 16, "bold"), padx=20, pady=2)
         plus_button.pack(pady=10)
