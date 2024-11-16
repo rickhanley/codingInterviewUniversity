@@ -11,7 +11,7 @@ from ctypes import windll
 windll.shcore.SetProcessDpiAwareness(1)
 
 variables = dict()
-record_saved = 0
+records_saved = 0
 
 root = tk.Tk()
 root.title("ABQ Data Entry Application")
@@ -168,10 +168,61 @@ save_button.pack(side=tk.RIGHT)
 reset_button = ttk.Button(buttons, text='Reset')
 reset_button.pack(side=tk.RIGHT)
 
+
 status_variable = tk.StringVar()
 ttk.Label(
     root,
     textvariable=status_variable
 ).grid(sticky=tk.W + tk.E, row=99, padx=10)
 
+def on_reset():
+    """Called when reset button is clicked, or after save"""
+    for variable in variables.values():
+        if isinstance(variable, tk.BooleanVar):
+            variable.set(False)
+        else:
+            variable.set('')
+    
+    notes_inp.delete('1.0', tk.END)
+    
+reset_button.configure(command=on_reset)
+
+def on_save():
+    """Handle save button clicks"""
+    global records_saved
+    
+    datestring = datetime.today().strftime("%y-%m-%d")
+    filename = f"abq_data_record_{datestring}.csv"
+    newfile = not Path(filename).exists()
+    
+    data = dict() # new dict
+    fault = variables['Equipment Fault'].get() # bool
+    for key, variable in variables.items(): # 
+        if fault and key in ('Light', 'Humidity', 'Temperature'):
+            data[key] = ''
+        else:
+            try:
+                data[key] = variable.get()
+            except tk.TclError:
+                status_variable.set(
+                    f'Error in field: {key}. Data was not saved!'
+                )
+                return
+    # get the text widget contents separately
+    data['Notes'] = notes_inp.get('1.0', tk.END)
+    
+    with open(filename, 'a', newline='') as fh:
+        csvwriter = csv.DictWriter(fh, fieldnames=data.keys())
+        if newfile:
+            csvwriter.writeheader()
+        csvwriter.writerow(data)
+        records_saved += 1
+        status_variable.set(
+            f"{records_saved} records saved this session"
+        )
+        on_reset()
+
+save_button.configure(command=on_save)
+
+on_reset()
 root.mainloop()

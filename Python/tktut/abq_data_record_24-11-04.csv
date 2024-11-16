@@ -1,0 +1,13 @@
+Date,Time,Technician,Lab,Plot,Seed Sample,Humidity,Light,Temperature,Equipment Fault,Plants,Blossoms,Fruit,Min Height,Max Height,Med Height,Notes
+01-11-24,12:00,Mo,B,3,5,0.64,2.0,14.0,False,4,6,8,40.0,45.0,42.0,"2sdafdfadsf
+"
+04-11-24,12:00,Mo,C,2,2,0.51,0.02,4.02,False,2,1,1,0.01,0.01,0.01,"uihiu
+"
+04-11-24,16:00,Mo,B,2,6,0.51,0.02,4.01,False,1,2,2,0.02,0.02,0.02,"dasfdsf
+"
+04-11-24,12:00,Mo,B,2,5,0.52,0.02,4.01,False,2,1,1,0.01,0.01,0.01,"dafdfg
+"
+xcxzc,12:00,Dave,C,6,9,0.52,0.01,4.01,False,1,1,1,0.01,0.01,0.01,"safsd
+"
+04-11-24,12:00,dfsfdfs,A,9,3,0.52,0.02,4.02,False,1,1,1,0.01,0.01,0.01,"dfafdg
+"
