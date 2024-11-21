@@ -1,0 +1,40 @@
+Quicktask
+
+A simple to-do app
+
+The main idea is to have a todo app that can sit on the desktop, not take up
+much space and be quick and easy to use. It should provide a clear status
+to the user at a glance. It should not be annoying, tedious, intrusive or
+intimidating to use. Thei idea is to have an sqlite database on the users
+machine so there's no login, signup or cloud faff. It should just work as 
+soon as it loads up.
+
+
+---------------------------------------------------------
+                    Quicktask
+---------------------------------------------------------
+       NEW     |     Show / Hide      |    SORT          
+---------------------------------------------------------
+       Done    |       Task           |   Due By
+---------------------------------------------------------
+      [  ]         Blah blah blah...      17/11/24
+      [  ]         Blah blah blah...      18/11/24
+      [  ]         Blah blah blah...      19/11/24
+
+The main window will be something similair to the above. The main window is
+really a rendering of the database items. Edits will be performed on a 
+modal style window that poops up to enter / edit new tasks. 
+
+New - Opens modal and has a text window for task description and database
+      and a save and a delete button
+
+Show / Hide - Shows all tasks or just the ones not ticked complete
+
+Sort - Should allow sorting by date added or by due date or urgency
+
+
+Done - Is a toggle. If filled in, task marked done and can be filtered out
+
+Task - description
+
+Due by - Used to calculate urgency and display colour coding to user 
