@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
+import sys
+
 
 root = tk.Tk()
 root.geometry("300x200")  # Set an initial window size
@@ -25,11 +27,20 @@ def configure_scroll_region(event):
 canvas.bind("<Configure>", lambda event: canvas.itemconfig(scrollable_window, width=event.width))
 canvas_frame.bind("<Configure>", configure_scroll_region)
 
+
+# Configure canvas_frame columns to stretch
+for i in range(3):  # Assuming 3 columns based on your code
+    canvas_frame.grid_columnconfigure(i, weight=1)  # Enable column stretching
+
+canvas_frame.grid_columnconfigure(0, weight=0, minsize=100)
+canvas_frame.grid_columnconfigure(1, weight=0, minsize=80)
+canvas_frame.grid_columnconfigure(2, weight=0, minsize=130)
 # Add some labels to the frame
 for i in range(20):  # Add enough labels to make the frame scrollable
-    label = tk.Label(canvas_frame, text=f"Label {i + 1}")
-    label.grid(row=i, column=0, padx=5, pady=5, sticky="w")
-
+    for j in range(3):
+        label = tk.Label(canvas_frame, text=f"Label {i + 1}", borderwidth=1, relief="solid")
+        label.grid(row=i, column=j % 3, padx=5, pady=5, sticky="ew")  # Expand labels horizontally
+    canvas_frame.grid_rowconfigure(i, minsize=label.winfo_reqheight())
 # Configure root grid to allow resizing
 root.grid_rowconfigure(0, weight=1)
 root.grid_columnconfigure(0, weight=1)
