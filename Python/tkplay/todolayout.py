@@ -1,41 +1,28 @@
+# imports
 import tkinter as tk
 from tkinter import ttk
 from ctypes import windll
 from PIL import Image, ImageTk
+import helpers
+import sqlite3
 
+windll.shcore.SetProcessDpiAwareness(1) # correct fuzzy rendering of app
 
-from datetime import date, datetime
-# border
-windll.shcore.SetProcessDpiAwareness(1)
+# test data for date fields
+dates = ['26/11/24', '18/12/24', '29/11/24', '03/12/24', '12/02/25']
+row_id_map = {}
+# print(helpers.date_label_colour("15/12/24"))
 
-def create_new_record():
-    pass
-def hide_complete():
-    pass
-def sort_list():
-    pass
-def toggle_fill():
-    pass
-def refresh_list():
-    pass
-def date_label_colour(due_date_str):
-    due_date = datetime.strptime(due_date_str, "%d/%m/%y").date()
-    today = date.today()
-    if due_date - today <=3:
-        return "red"  # due soon
-    elif due_date - today <=5:
-        return "orange"  # Due today
-    else:
-        return "green"  # Not yet due
-
-dates = ['15/12/24', '18/12/24', '25/11/24', '03/12/24', '12/02/25']
-
-root = tk.Tk()
-root.geometry("600x1200")
-root.minsize(width=600, height=900)
+root = tk.Tk() # main tkinter app window
+root.geometry("600x1000")
+root.minsize(width=600, height=1000)
 
 # Create the canvas and scrollbar
 canvas = tk.Canvas(root)
+
+spacer = tk.Frame(canvas, height=20, borderwidth=2, relief="solid")  # 20px padding
+spacer.grid()
+
 
 scrollbar = ttk.Scrollbar(root, orient="vertical", command=canvas.yview)
 scroller = tk.Frame(canvas, padx=15, pady=15, borderwidth=2, relief="solid")
@@ -106,20 +93,20 @@ button_frame.columnconfigure(2, weight=1)
 button_frame.columnconfigure(3, weight=1)
 
 
-button_gif = tk.PhotoImage(file="plus-square.png")
-new_btn = ttk.Button(button_frame, image=button_gif, style="RoundedButton.TButton", command=create_new_record)
+button_gif = tk.PhotoImage(file="buttons/plus-square.png")
+new_btn = ttk.Button(button_frame, image=button_gif, style="RoundedButton.TButton", command=lambda: helpers.create_new_record(root))
 new_btn.grid(row=0, column=0, padx=15, pady=15, sticky="ew")
 
-eye_gif = tk.PhotoImage(file="funnel.png")
-hide_btn = ttk.Button(button_frame, image=eye_gif, style="RoundedButton.TButton", command=hide_complete)
+eye_gif = tk.PhotoImage(file="buttons/funnel.png")
+hide_btn = ttk.Button(button_frame, image=eye_gif, style="RoundedButton.TButton", command=helpers.hide_complete)
 hide_btn.grid(row=0, column=1, padx=15, pady=15, sticky="ew")
 
-sort_gif = tk.PhotoImage(file="arrows-down-up.png")
-sort_btn = ttk.Button(button_frame, image=sort_gif, style="RoundedButton.TButton", command=sort_list)
+sort_gif = tk.PhotoImage(file="buttons/arrows-down-up.png")
+sort_btn = ttk.Button(button_frame, image=sort_gif, style="RoundedButton.TButton", command=helpers.sort_list)
 sort_btn.grid(row=0, column=2, padx=15, pady=15, sticky="ew")
 
-refresh_gif = tk.PhotoImage(file="arrows-clockwise.png")
-refresh_btn = ttk.Button(button_frame, image=refresh_gif, style="RoundedButton.TButton", command=refresh_list)
+refresh_gif = tk.PhotoImage(file="buttons/arrows-clockwise.png")
+refresh_btn = ttk.Button(button_frame, image=refresh_gif, style="RoundedButton.TButton", command=helpers.refresh_list)
 refresh_btn.grid(row=0, column=3, padx=15, pady=15, sticky="ew")
 
 
@@ -147,28 +134,45 @@ due_by_label.grid(row=1, column=2, sticky="ew")
 def update_wrap(event, label, padding_x):
     # Dynamically adjust wraplength based on label width and padding
     label.configure(wraplength=label.winfo_width() - padding_x * 2)
+    
+def render_list():
+    
+    conn = sqlite3.connect("tasks.db")
+    cursor = conn.cursor()
+    
+    query = "SELECT * FROM tasks WHERE complete = 0"
+    cursor.execute(query)
+    
+    tasks = cursor.fetchall()
+    conn.close()
+    
+    for i, task in enumerate(tasks):
+        task_id, creation_date, complete, detail, due_date = task
+        padding_x = 15  # Horizontal padding
+        
 
-for i in range(25):
-    padding_x = 15  # Horizontal padding
+        completed_btn = ttk.Button(scroller, style="SmallButton.TButton", command=helpers.toggle_fill)
+        label1 = tk.Label(scroller, text="      ", borderwidth=2, relief="groove", padx=12, pady=15)
+        completed_btn.grid(row=i, column=0, padx=15, pady=1, sticky="ew") # external padding
 
-    completed_btn = ttk.Button(scroller, style="SmallButton.TButton", command=toggle_fill)
-    # label1 = tk.Label(scroller, text="      ", borderwidth=2, relief="groove", padx=12, pady=15)
-    completed_btn.grid(row=i, column=0, padx=15, pady=1, sticky="ew") # external padding
+        label2 = tk.Label(
+            scroller,
+            text=f"{detail}",
+            borderwidth=2,
+            relief="groove",
+            padx=padding_x - 4,
+            pady=15,  # Vertical padding
+            justify="left"
+        )
+        
+        row_id_map[label2] = task_id
+        
+        label2.grid(row=i, column=1, sticky="ew")
+        label2.bind("<Configure>", lambda event, lbl=label2, pad=padding_x: update_wrap(event, lbl, pad))
+        label2.bind("<Button-1>", lambda event: helpers.open_modal(root, row_id_map[label2]))
+        
+        label3 = tk.Label(scroller, text=f"{due_date}", borderwidth=2, relief="groove", padx=20, pady=15, background=f"{helpers.date_label_colour(due_date)}")
+        label3.grid(row=i, column=2, padx=15, pady=15, sticky="ew")
 
-    label2 = tk.Label(
-        scroller,
-        text="blah blah blah blah blah blah blah blah blah blah blah blah",
-        borderwidth=2,
-        relief="groove",
-        padx=padding_x - 4,
-        pady=15,  # Vertical padding
-        justify="left"
-    )
-    label2.grid(row=i, column=1, sticky="ew")
-    label2.bind("<Configure>", lambda event, lbl=label2, pad=padding_x: update_wrap(event, lbl, pad))
-
-    label3 = tk.Label(scroller, text=f"{dates[i % 5]}", borderwidth=2, relief="groove", padx=20, pady=15, background=f"{date_label_colour(dates[(i % 5)])}")
-    label3.grid(row=i, column=2, padx=15, pady=15, sticky="ew")
-
-
+render_list()
 root.mainloop()
