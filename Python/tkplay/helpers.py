@@ -1,9 +1,11 @@
 import tkinter as tk
+from tkinter import ttk
 from datetime import datetime, date
 import sqlite3
 
+
 def todays_date_formatted(today_unformatted):
-    return today_unformatted.strftime("%d/%m/%Y")
+    return today_unformatted.strftime("%d/%m/%y")
 
 def get_row_text(row_id):
     conn = sqlite3.connect("tasks.db")
@@ -24,6 +26,7 @@ def new_entry_save(modal_text):
     cursor.execute('INSERT INTO tasks (detail, creation_date, complete, due_date) VALUES (?, ?, ?, ?)', (modal_text, formatted_date, 0, due_date))
     conn.commit()
     conn.close()
+    # render_list()
 
 # Close the connection
 
@@ -58,6 +61,9 @@ def open_modal(root, row_id):
     
     if details_text:  # Ensure there is content to insert
         modal_text.insert("1.0", details_text)
+        modal_text.mark_set("insert", "end")
+        modal_text.focus_set()  
+        modal_text.see("insert")
     # Make the Text widget's frame expandable
     modal_scroll_frame.grid_rowconfigure(0, weight=1)
     modal_scroll_frame.grid_columnconfigure(0, weight=1)
@@ -71,7 +77,7 @@ def open_modal(root, row_id):
     
 def date_label_colour(due_date_str):
     """Function to determine the colour coding of the data labels"""
-    due_date = datetime.strptime(due_date_str, "%d/%m/%Y").date()
+    due_date = datetime.strptime(due_date_str, "%d/%m/%y").date()
     today = date.today()
     days_diff = (due_date - today).days
     if days_diff < 3:  # Past due

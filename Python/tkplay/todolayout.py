@@ -169,7 +169,8 @@ def render_list():
         
         label2.grid(row=i, column=1, sticky="ew")
         label2.bind("<Configure>", lambda event, lbl=label2, pad=padding_x: update_wrap(event, lbl, pad))
-        label2.bind("<Button-1>", lambda event: helpers.open_modal(root, row_id_map[label2]))
+        label2.bind("<Button-1>", lambda event, lbl=label2: helpers.open_modal(root, row_id_map[lbl]))
+
         
         label3 = tk.Label(scroller, text=f"{due_date}", borderwidth=2, relief="groove", padx=20, pady=15, background=f"{helpers.date_label_colour(due_date)}")
         label3.grid(row=i, column=2, padx=15, pady=15, sticky="ew")
