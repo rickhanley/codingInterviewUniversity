@@ -5,10 +5,11 @@ from ctypes import windll
 from PIL import Image, ImageTk
 import helpers
 import sqlite3
-import renderlist
+
 windll.shcore.SetProcessDpiAwareness(1) # correct fuzzy rendering of app
 
-
+# test data for date fields
+row_id_map = {}
 # print(helpers.date_label_colour("15/12/24"))
 
 root = tk.Tk() # main tkinter app window
@@ -21,9 +22,10 @@ canvas = tk.Canvas(root)
 spacer = tk.Frame(canvas, height=20, borderwidth=2, relief="solid")  # 20px padding
 spacer.grid()
 
+
 scrollbar = ttk.Scrollbar(root, orient="vertical", command=canvas.yview)
 scroller = tk.Frame(canvas, padx=15, pady=15, borderwidth=2, relief="solid")
-scroller.grid(column=0, pady=15, padx=15, sticky="nsew")
+scroller.grid(column=0, pady=15, padx=15, sticky="ew")
 
 canvas.configure(yscrollcommand=scrollbar.set, scrollregion=(0, 0, 0, 0))
 scrollable_window = canvas.create_window((0, 0), window=scroller, anchor="nw")
@@ -91,7 +93,7 @@ button_frame.columnconfigure(3, weight=1)
 
 
 button_gif = tk.PhotoImage(file="buttons/plus-square.png")
-new_btn = ttk.Button(button_frame, image=button_gif, style="RoundedButton.TButton", command=lambda: helpers.create_new_record(root, scroller))
+new_btn = ttk.Button(button_frame, image=button_gif, style="RoundedButton.TButton", command=lambda: helpers.create_new_record(root))
 new_btn.grid(row=0, column=0, padx=15, pady=15, sticky="ew")
 
 eye_gif = tk.PhotoImage(file="buttons/funnel.png")
@@ -103,7 +105,7 @@ sort_btn = ttk.Button(button_frame, image=sort_gif, style="RoundedButton.TButton
 sort_btn.grid(row=0, column=2, padx=15, pady=15, sticky="ew")
 
 refresh_gif = tk.PhotoImage(file="buttons/arrows-clockwise.png")
-refresh_btn = ttk.Button(button_frame, image=refresh_gif, style="RoundedButton.TButton", command= lambda: helpers.refresh_list(root, scroller))
+refresh_btn = ttk.Button(button_frame, image=refresh_gif, style="RoundedButton.TButton", command=helpers.refresh_list)
 refresh_btn.grid(row=0, column=3, padx=15, pady=15, sticky="ew")
 
 
@@ -128,6 +130,47 @@ due_by_label.grid(row=1, column=2, sticky="ew")
 
 # Add labels to the scroller
 
-renderlist.render_list(root, scroller)
+def update_wrap(event, label, padding_x):
+    # Dynamically adjust wraplength based on label width and padding
+    label.configure(wraplength=label.winfo_width() - padding_x * 2)
+    
+def render_list():
+    
+    conn = sqlite3.connect("tasks.db")
+    cursor = conn.cursor()
+    
+    query = "SELECT * FROM tasks WHERE complete = 0"
+    cursor.execute(query)
+    
+    tasks = cursor.fetchall()
+    conn.close()
+    
+    for i, task in enumerate(tasks):
+        task_id, creation_date, complete, detail, due_date = task
+        padding_x = 15  # Horizontal padding
+        
+        completed_btn = ttk.Button(scroller, style="SmallButton.TButton", command=helpers.toggle_fill)
+        label1 = tk.Label(scroller, text="      ", borderwidth=2, relief="groove", padx=12, pady=15)
+        completed_btn.grid(row=i, column=0, padx=15, pady=1, sticky="ew") # external padding
 
+        label2 = tk.Label(
+            scroller,
+            text=f"{detail}",
+            borderwidth=2,
+            relief="groove",
+            padx=padding_x - 4,
+            pady=15,  # Vertical padding
+            justify="left"
+        )
+        
+        row_id_map[label2] = task_id
+        
+        label2.grid(row=i, column=1, sticky="ew")
+        label2.bind("<Configure>", lambda event, lbl=label2, pad=padding_x: update_wrap(event, lbl, pad))
+        label2.bind("<Button-1>", lambda event, lbl=label2: helpers.open_modal(root, row_id_map[lbl]))
+
+        label3 = tk.Label(scroller, text=f"{due_date}", borderwidth=2, relief="groove", padx=20, pady=15, background=f"{helpers.date_label_colour(due_date)}")
+        label3.grid(row=i, column=2, padx=15, pady=15, sticky="ew")
+
+render_list()
 root.mainloop()
