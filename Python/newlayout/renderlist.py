@@ -31,8 +31,8 @@ def render_list(root, scroller):
         padding_x = 50  # Horizontal padding
 
         # completed_btn = ttk.Label(scroller, text="", font=("Arial", 12, "bold"), borderwidth=1, relief="groove", padding=(15, 15))
-        completed_btn = ttk.Label(scroller, text=f"{u'\u2713'}", font=("Arial", 12, "bold"), borderwidth=1, relief="groove", padding=(14, 15))
-        completed_btn.grid(row=i, column=0, padx=(17,17), sticky="ew")  # external padding
+        completed_btn = ttk.Label(scroller, text=f"{u'\u2713'}", font=("Arial", 12, "bold"), borderwidth=1, relief="groove", padding=(15, 15))
+        completed_btn.grid(row=i, column=0, padx=(16,17), sticky="ew")  # external padding
 
         label2 = tk.Label(
             scroller,
