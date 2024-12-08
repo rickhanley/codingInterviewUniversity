@@ -6,6 +6,7 @@ import renderlist
 from tkinter import *
 from tkcalendar import Calendar
 
+
 def todays_date_formatted(today_unformatted):
     return today_unformatted.strftime("%d/%m/%y")
 

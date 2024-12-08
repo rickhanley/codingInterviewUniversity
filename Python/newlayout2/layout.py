@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import renderlist
 
+
 root = tk.Tk()
 root.geometry("500x900")
 root.grid_columnconfigure(0, weight=1)

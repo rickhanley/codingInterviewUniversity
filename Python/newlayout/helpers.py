@@ -9,12 +9,12 @@ from tkcalendar import Calendar
 def todays_date_formatted(today_unformatted):
     return today_unformatted.strftime("%d/%m/%y")
 
-def date_picker(parent_modal):
+def date_picker(parent_modal, date_label, row_id):
     # Create a new Toplevel window for the date picker
     date_modal = tk.Toplevel(parent_modal)
     date_modal.title("Select Date")
     date_modal.geometry("400x400")  # Adjust the size as needed
-    
+
     # Make the date picker modal (blocks interaction with parent_modal until closed)
     date_modal.transient(parent_modal)
     date_modal.grab_set()
@@ -27,18 +27,21 @@ def date_picker(parent_modal):
     def confirm_date():
         selected_date = calendar.get_date()
         print(f"Selected Date: {selected_date}")
-        # I think the code to update the date should go here
-        # and the selected_date needs to be returned to where the button is rendered 
-        # ^^ That is the label in open_modal()
-        # Close the date picker modal
-        date_modal.destroy()
-        # Optionally, update the parent modal or perform further actions with the selected date
+        conn = sqlite3.connect("tasks.db")
+        cursor = conn.cursor()
+        # need to address due_date but for now will be left unchanged
+        cursor.execute('UPDATE tasks SET due_date = ? WHERE id = ?', (selected_date, row_id))
+        conn.commit()
+        conn.close()
+        date_label.config(text=selected_date)  # Update the date_label text
+        date_modal.destroy()  # Close the date modal
+        # return selected_date
 
-    confirm_button = tk.Button(date_modal, text="Confirm", command=confirm_date)
+    confirm_button = tk.Button(date_modal, text="Confirm", command=confirm_date, font=("Arial", 12))
     confirm_button.grid(padx=20, pady=10)
 
     # Add a cancel button to close the date picker without selecting a date
-    cancel_button = tk.Button(date_modal, text="Cancel", command=date_modal.destroy)
+    cancel_button = tk.Button(date_modal, text="Cancel", command=date_modal.destroy, font=("Arial", 12))
     cancel_button.grid(padx=20, pady=10)
 
 def get_row_text(row_id):
@@ -80,12 +83,11 @@ def open_modal(root, scroller, row_id, due_date):
     if row_id is not None:
         details_text = get_row_text(row_id)
         update = True
-        
     else:
         details_text = ""
     
     print(f"Row ID: {row_id}")
-    """Function to show the modal window to accept task specific data."""
+    """Function to show the modal window to accept task-specific data."""
     
     modal = tk.Toplevel(root)
     modal.title("Task Detail")
@@ -94,10 +96,12 @@ def open_modal(root, scroller, row_id, due_date):
     # Make the modal window expandable
     modal.grid_rowconfigure(0, weight=1)
     modal.grid_columnconfigure(0, weight=1)
+    modal.grid_columnconfigure(1, weight=1)
+    modal.grid_columnconfigure(2, weight=1)  # Ensure the third column is weight-adjustable
     
     # Canvas for potential scrolling (currently not used for scrolling)
     modal_scroll_canvas = tk.Canvas(modal, borderwidth=2, relief="solid")
-    modal_scroll_canvas.grid(row=0, column=0, columnspan=2, sticky="nsew")
+    modal_scroll_canvas.grid(row=0, column=0, columnspan=3, sticky="nsew")  # Span across all 3 columns
     
     # Frame to contain the Text widget
     modal_scroll_frame = tk.Frame(modal_scroll_canvas)
@@ -109,13 +113,15 @@ def open_modal(root, scroller, row_id, due_date):
     
     # Text widget that expands with the window
     modal_text = tk.Text(modal_scroll_frame, height=12, width=35)
-    modal_text.grid(row=0, column=0, columnspan=2, padx=15, pady=15, sticky="nsew")
+    modal_text.grid(row=0, column=0, columnspan=3, padx=15, pady=15, sticky="nsew")
     modal.grid_rowconfigure(0, weight=1)
     modal.grid_columnconfigure(0, weight=1)
-    modal.grid_columnconfigure(1, weight=1)  # Add weight for column 1 as well
+    modal.grid_columnconfigure(1, weight=1)
+    modal.grid_columnconfigure(2, weight=1)  # Add weight for column 2 as well
+    
     scrollbar = tk.Scrollbar(modal_scroll_frame, command=modal_text.yview)
     scrollbar.grid(sticky="ns", column=1, row=0)
-
+    
     # Link the scrollbar to the Text widget
     modal_text.config(yscrollcommand=scrollbar.set)
     
@@ -124,22 +130,32 @@ def open_modal(root, scroller, row_id, due_date):
         modal_text.mark_set("insert", "end")
         modal_text.focus_set()  
         modal_text.see("insert")
+    
     # Make the Text widget's frame expandable
     modal_scroll_frame.grid_rowconfigure(0, weight=1)
     modal_scroll_frame.grid_columnconfigure(0, weight=1)
     
     # Save button (not expandable)
     if update == True:
-        save_btn = tk.Button(modal, text="Save", font=("Arial", 16), command= lambda: existing_entry_update(modal_text.get('1.0', 'end').strip(), root, scroller, row_id, modal))
+        save_btn = tk.Button(modal, text="Save", font=("Arial", 12), command= lambda: existing_entry_update(modal_text.get('1.0', 'end').strip(), root, scroller, row_id, modal))
         save_btn.grid(row=1, column=0, padx=30, pady=30)
     else:
-        save_btn = tk.Button(modal, text="Save", font=("Arial", 16), command= lambda: new_entry_save(modal_text.get('1.0', 'end').strip(), root, scroller, modal))
+        save_btn = tk.Button(modal, text="Save", font=("Arial", 12), command= lambda: new_entry_save(modal_text.get('1.0', 'end').strip(), root, scroller, modal))
         save_btn.grid(row=1, column=0, padx=30, pady=30)
-        
-    date_label = tk.Button(modal, text=f"{due_date}", font=("Arial", 16), command= lambda: date_picker(modal, due_date))
+    
+    if due_date is None:
+        due_date = datetime.today().strftime('%d/%m/%y')  # Format today's date as 'YYYY-MM-DD'
+    # Date label button
+    date_label = tk.Button(modal, text=f"{due_date}", font=("Arial", 12), command= lambda: date_picker(modal, date_label, row_id))
     date_label.grid(row=1, column=1, padx=30, pady=30)
+    
+    # Delete button - ensure it's in a separate column
+    delete_button = tk.Button(modal, text="Delete", font=("Arial", 12), command= lambda: delete_entry(row_id, root, scroller, modal))
+    delete_button.grid(row=1, column=2, padx=30, pady=30)
+    
     # Make the modal window modal
     modal.grab_set()
+
     
 def date_label_colour(due_date_str):
     """Function to determine the colour coding of the data labels"""
@@ -154,7 +170,17 @@ def date_label_colour(due_date_str):
         return "#43aa8b"
     
 def create_new_record(root, scroller):
-    open_modal(root, scroller, None)
+    open_modal(root, scroller, None, None)
+    
+def delete_entry(row_id, root, scroller, modal):
+    conn = sqlite3.connect("tasks.db")
+    cursor = conn.cursor()
+    query = "DELETE FROM tasks WHERE id = ?"
+    cursor.execute(query, (row_id,))
+    conn.commit()
+    conn.close()
+    refresh_list(root,scroller)
+    modal.destroy()
     
 def hide_complete():
     pass
