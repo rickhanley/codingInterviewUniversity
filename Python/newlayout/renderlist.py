@@ -6,8 +6,6 @@ import helpers
 # test data for date fields
 row_id_map = {}
 
-
-
 def update_wrap(event, label, padding_x):
     # Dynamically adjust wraplength based on label width and padding
     label.configure(wraplength=label.winfo_width() - padding_x * 2)
@@ -31,25 +29,26 @@ def render_list(root, scroller):
         padding_x = 50  # Horizontal padding
 
         # completed_btn = ttk.Label(scroller, text="", font=("Arial", 12, "bold"), borderwidth=1, relief="groove", padding=(15, 15))
-        completed_btn = ttk.Label(scroller, text=f"{u'\u2713'}", font=("Arial", 12, "bold"), borderwidth=1, relief="groove", padding=(15, 15))
-        completed_btn.grid(row=i, column=0, padx=(16,17), sticky="ew")  # external padding
+        completed_btn = ttk.Label(scroller, text=f"", font=("Arial", 14), borderwidth=1, relief="groove", padding=(24, 15))
+        completed_btn.grid(row=i, column=0, padx=(15,15), sticky="ew")  # external padding
 
         label2 = tk.Label(
             scroller,
-            text=f"{detail.strip().replace('\n', ' ')[:70]}{'...' if len(detail) > 80 else ''}",
+            text=f"{detail.strip().replace('\n', ' ')[:70]}{'...' if len(detail) > 70 else ''}",
             borderwidth=2,
             relief="groove",
-            pady=15,  # Vertical padding
-            padx=15,
-            justify="left"
+            pady=15,
+            padx=5,# Vertical padding
+            justify="left",
+            font=("Arial", 14)
         )
         
         row_id_map[label2] = task_id
         
-        label2.grid(row=i, column=1, sticky="ew", padx=1)
+        label2.grid(row=i, column=1, sticky="ew")
 
         # Bind the event to label2 for opening a modal
-        def on_label2_click(event, task_id=task_id, due_date=due_date):
+        def on_label2_click(event, task_id=task_id, due_date=due_date): 
             helpers.open_modal(root, scroller, task_id, due_date)
         
         label2.bind("<Button-1>", on_label2_click)
@@ -60,5 +59,5 @@ def render_list(root, scroller):
         
         label2.bind("<Configure>", on_label2_resize)
 
-        label3 = tk.Label(scroller, text=f"{due_date}", borderwidth=1, relief="solid", pady=15, padx=17, background=f"{helpers.date_label_colour(due_date)}")
-        label3.grid(row=i, column=2, pady=15, padx=(15, 0), sticky="ew")
+        label3 = tk.Label(scroller, text=f"{due_date}", borderwidth=1, relief="solid", font=("Arial", 14), pady=16, padx=15, background=f"{helpers.date_label_colour(due_date)}")
+        label3.grid(row=i, column=2, pady=15, padx=(16, 6), sticky="ew")

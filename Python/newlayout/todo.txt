@@ -1,2 +1,5 @@
-When the new task modal first appears the date in the button is diaplyed with dashes and not slashes
-Regardless of what you change the date to on first use, it saves todays date to the database
+The create_new_task fucntion creates a tentative record, so
+a row number is avaialble to save against. However, if the window is
+closed I need to implement a delete of the tentative record otherwise
+a blank entry is added.
+

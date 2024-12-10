@@ -6,6 +6,7 @@ import renderlist
 # from tkinter import *
 from tkcalendar import Calendar
 
+
 def todays_date_formatted(today_unformatted):
     return today_unformatted.strftime("%d/%m/%y")
 
@@ -44,7 +45,7 @@ def date_picker(parent_modal, date_label, row_id):
         date_modal.destroy()  # Close the date modal
         # return selected_date
 
-    confirm_button = tk.Button(date_modal, text="Confirm", command=confirm_date, font=("Arial", 12))
+    confirm_button = tk.Button(date_modal, text="Confirm", command=confirm_date, font=("Arial", 16))
     confirm_button.grid(column=0, row=1, padx=20, pady=10)
 
     # Add a cancel button to close the date picker without selecting a date
@@ -119,7 +120,7 @@ def open_modal(root, scroller, row_id, due_date):
     modal_scroll_canvas.grid_columnconfigure(0, weight=1)
     
     # Text widget that expands with the window
-    modal_text = tk.Text(modal_scroll_frame, height=12, width=35)
+    modal_text = tk.Text(modal_scroll_frame, height=12, width=35, font=("Arial", 16))
     modal_text.grid(row=0, column=0, columnspan=3, padx=15, pady=15, sticky="nsew")
     modal.grid_rowconfigure(0, weight=1)
     modal.grid_columnconfigure(0, weight=1)
@@ -144,24 +145,24 @@ def open_modal(root, scroller, row_id, due_date):
     
     # Save button
     if update == True:
-        save_btn = tk.Button(modal, text="Save", font=("Arial", 12), command= lambda: existing_entry_update(modal_text.get('1.0', 'end').strip(), root, scroller, row_id, modal))
+        save_btn = tk.Button(modal, text="Save", font=("Arial", 16), command= lambda: existing_entry_update(modal_text.get('1.0', 'end').strip(), root, scroller, row_id, modal))
         save_btn.grid(row=1, column=0, padx=30, pady=30)
-        date_label = tk.Button(modal, text=f"{due_date}", font=("Arial", 12), command= lambda: date_picker(modal, date_label, row_id))
+        date_label = tk.Button(modal, text=f"{due_date}", font=("Arial", 16), command= lambda: date_picker(modal, date_label, row_id))
         date_label.grid(row=1, column=1, padx=30, pady=30)
-        delete_button = tk.Button(modal, text="Delete", font=("Arial", 12), command= lambda: delete_entry(row_id, root, scroller, modal))
+        delete_button = tk.Button(modal, text="Delete", font=("Arial", 16), command= lambda: delete_entry(row_id, root, scroller, modal))
         delete_button.grid(row=1, column=2, padx=30, pady=30)
         
     else:
-        save_btn = tk.Button(modal, text="Save", font=("Arial", 12), command= lambda: new_entry_save(modal_text.get('1.0', 'end').strip(), root, scroller, modal))
+        save_btn = tk.Button(modal, text="Save", font=("Arial", 16), command= lambda: new_entry_save(modal_text.get('1.0', 'end').strip(), root, scroller, modal), padx=15, pady=15)
         save_btn.grid(row=1, column=0, padx=30, pady=30)
         if due_date is None:
             due_date = datetime.today().strftime('%d/%m/%y')  # Format today's date as 'YYYY-MM-DD'
         # Date label button
-        date_label = tk.Button(modal, text=f"{due_date}", font=("Arial", 12), command= lambda: date_picker(modal, date_label, row_id))
+        date_label = tk.Button(modal, text=f"{due_date}", font=("Arial", 16), command= lambda: date_picker(modal, date_label, row_id))
         date_label.grid(row=1, column=1, padx=30, pady=30)
         
         # Delete button - ensure it's in a separate column
-        delete_button = tk.Button(modal, text="Delete", font=("Arial", 12), command= lambda: delete_entry(row_id, root, scroller, modal))
+        delete_button = tk.Button(modal, text="Delete", font=("Arial", 16), command= lambda: delete_entry(row_id, root, scroller, modal))
         delete_button.grid(row=1, column=2, padx=30, pady=30)
     
     # Make the modal window modal
@@ -205,7 +206,13 @@ def delete_entry(row_id, root, scroller, modal):
 def hide_complete():
     pass
 def sort_list():
-    pass
+    conn = sqlite3.connect("tasks.db")
+    cursor = conn.cursor()
+    query = "SELECT * FROM tasks WHERE complete = 0 ORDER BY due_date ASC"
+    cursor.execute(query)
+    tasks = cursor.fetchall()
+    conn.close()
+    return tasks
 def toggle_fill():
     pass
 def refresh_list(root, scroller):

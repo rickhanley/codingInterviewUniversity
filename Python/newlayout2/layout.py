@@ -6,11 +6,12 @@ import renderlist
 root = tk.Tk()
 root.geometry("500x900")
 root.grid_columnconfigure(0, weight=1)
+root.grid_rowconfigure(2, weight=1)
 
 heading = ttk.Label(root, text="QuickTask QT", font=('Arial', 20, "bold"))
 heading.grid(row=0)
 
-button_frame = tk.Frame(root)
+button_frame = tk.Frame(root, width=60, height=10)
 button_frame.grid(column=0, row=1)
 
 button_gif = tk.PhotoImage(file="buttons/plus-square.png")
@@ -32,7 +33,7 @@ refresh_btn.grid(row=0, column=3, padx=15, pady=15, sticky="ew")
 button_frame.grid_columnconfigure(0, weight=1)
 
 label_frame = tk.Frame(root)
-label_frame.grid(column=0, row=2, sticky="ew", padx=50)
+label_frame.grid(column=0, row=2, sticky="ew")
 
 done_label = ttk.Label(label_frame, text=f"{u'\u2713'}", font=("Arial", 12, "bold"), borderwidth=1, relief="groove", padding=(15, 15))
 done_label.grid(row=0, column=0, sticky="ew")
