@@ -15,7 +15,7 @@ def date_picker(parent_modal, date_label, row_id):
     print(f"CGET: {date_label.cget("text")}")
     date_modal = tk.Toplevel(parent_modal)
     date_modal.title("Select Date")
-    date_modal.geometry("400x380")  # Adjust the size as needed
+    date_modal.geometry("420x380")  # Adjust the size as needed
     
 
     # Make the date picker modal (blocks interaction with parent_modal until closed)
@@ -23,7 +23,7 @@ def date_picker(parent_modal, date_label, row_id):
     date_modal.grab_set()
 
     # Add a Calendar widget to the date modal
-    calendar = Calendar(date_modal, date_pattern="dd/mm/yy")
+    calendar = Calendar(date_modal, date_pattern="dd/mm/yy", font=("Arial", 20))
     calendar.grid(padx=20, pady=20, columnspan=2)
 
     # Add a button to confirm the date selection
@@ -45,11 +45,11 @@ def date_picker(parent_modal, date_label, row_id):
         date_modal.destroy()  # Close the date modal
         # return selected_date
 
-    confirm_button = tk.Button(date_modal, text="Confirm", command=confirm_date, font=("Arial", 16))
+    confirm_button = tk.Button(date_modal, text="Confirm", command=confirm_date, font=("Arial", 20), padx=15, pady=15)
     confirm_button.grid(column=0, row=1, padx=20, pady=10)
 
     # Add a cancel button to close the date picker without selecting a date
-    cancel_button = tk.Button(date_modal, text="Cancel", command=date_modal.destroy, font=("Arial", 12))
+    cancel_button = tk.Button(date_modal, text="Cancel", command=date_modal.destroy, font=("Arial", 20), padx=15, pady=15)
     cancel_button.grid(column=1, row=1, padx=20, pady=10)
 
 def get_row_text(row_id):
@@ -64,33 +64,36 @@ def get_row_text(row_id):
     return result[0] if result else None
 
 def existing_entry_update(modal_text, root, scroller, row_id, modal):
-    print(row_id)
+    print(f"Exisitng entry, ROW_ID: {row_id}")
     conn = sqlite3.connect("tasks.db")
     cursor = conn.cursor()
     # need to address due_date but for now will be left unchanged
     cursor.execute('UPDATE tasks SET detail = ? WHERE id = ?', (modal_text, row_id))
     conn.commit()
+    
     conn.close()
+    
     modal.destroy()
     renderlist.render_list(root, scroller)
 
-def new_entry_save(modal_text, root, scroller, modal):
-    conn = sqlite3.connect("tasks.db")
-    cursor = conn.cursor()
-    formatted_date = todays_date_formatted(datetime.now())
-    due_date = formatted_date
-    cursor.execute('INSERT INTO tasks (detail, creation_date, complete, due_date) VALUES (?, ?, ?, ?)', (modal_text, formatted_date, 0, due_date))
-    conn.commit()
-    conn.close()
-    modal.destroy()
-    renderlist.render_list(root, scroller)
+# def new_entry_save(modal_text, root, scroller, modal):
+#     print("New entry save")
+#     conn = sqlite3.connect("tasks.db")
+#     cursor = conn.cursor()
+#     formatted_date = todays_date_formatted(datetime.now())
+#     due_date = formatted_date
+#     cursor.execute('INSERT INTO tasks (detail, creation_date, complete, due_date) VALUES (?, ?, ?, ?)', (modal_text, formatted_date, 0, due_date))
+#     new_task_id = cursor.lastrowid
+#     conn.commit()
+#     conn.close()
+#     modal.destroy()
+#     renderlist.render_list(root, scroller)
 
 def open_modal(root, scroller, row_id, due_date):
-    update = False
     
     if row_id is not None:
         details_text = get_row_text(row_id)
-        update = True
+
     else:
         details_text = ""
     
@@ -144,27 +147,21 @@ def open_modal(root, scroller, row_id, due_date):
     modal_scroll_frame.grid_columnconfigure(0, weight=1)
     
     # Save button
-    if update == True:
-        save_btn = tk.Button(modal, text="Save", font=("Arial", 16), command= lambda: existing_entry_update(modal_text.get('1.0', 'end').strip(), root, scroller, row_id, modal))
-        save_btn.grid(row=1, column=0, padx=30, pady=30)
-        date_label = tk.Button(modal, text=f"{due_date}", font=("Arial", 16), command= lambda: date_picker(modal, date_label, row_id))
-        date_label.grid(row=1, column=1, padx=30, pady=30)
-        delete_button = tk.Button(modal, text="Delete", font=("Arial", 16), command= lambda: delete_entry(row_id, root, scroller, modal))
-        delete_button.grid(row=1, column=2, padx=30, pady=30)
+    save_btn = tk.Button(modal, text="Save", font=("Arial", 20), command= lambda: existing_entry_update(modal_text.get('1.0', 'end').strip(), root, scroller, row_id, modal), padx=15, pady=15)
+    save_btn.grid(row=1, column=0, padx=30, pady=30)
+    date_label = tk.Button(modal, text=f"{due_date}", font=("Arial", 20), command= lambda: date_picker(modal, date_label, row_id), padx=15, pady=15)
+    date_label.grid(row=1, column=1, padx=30, pady=30)
+    delete_button = tk.Button(modal, text="Delete", font=("Arial", 20), command= lambda: delete_entry(row_id, root, scroller, modal), padx=15, pady=15)
+    delete_button.grid(row=1, column=2, padx=30, pady=30)
         
-    else:
-        save_btn = tk.Button(modal, text="Save", font=("Arial", 16), command= lambda: new_entry_save(modal_text.get('1.0', 'end').strip(), root, scroller, modal), padx=15, pady=15)
-        save_btn.grid(row=1, column=0, padx=30, pady=30)
-        if due_date is None:
-            due_date = datetime.today().strftime('%d/%m/%y')  # Format today's date as 'YYYY-MM-DD'
-        # Date label button
-        date_label = tk.Button(modal, text=f"{due_date}", font=("Arial", 16), command= lambda: date_picker(modal, date_label, row_id))
-        date_label.grid(row=1, column=1, padx=30, pady=30)
         
-        # Delete button - ensure it's in a separate column
-        delete_button = tk.Button(modal, text="Delete", font=("Arial", 16), command= lambda: delete_entry(row_id, root, scroller, modal))
-        delete_button.grid(row=1, column=2, padx=30, pady=30)
-    
+    def on_close(details_text):
+        if details_text == '':
+            print("On close")
+            # Call the delete_record method to remove the blank record
+            delete_entry(row_id, root, scroller, modal)
+            modal.destroy()
+    modal.protocol("WM_DELETE_WINDOW", lambda: on_close(details_text))
     # Make the modal window modal
     modal.grab_set()
 
@@ -182,6 +179,7 @@ def date_label_colour(due_date_str):
         return "#43aa8b"
     
 def create_new_record(root, scroller):
+    print("create new")
     modal_text=''
     conn = sqlite3.connect("tasks.db")
     cursor = conn.cursor()
@@ -190,6 +188,7 @@ def create_new_record(root, scroller):
     cursor.execute('INSERT INTO tasks (detail, creation_date, complete, due_date) VALUES (?, ?, ?, ?)', (modal_text, formatted_date, 0, due_date))
     conn.commit()
     new_task_id = cursor.lastrowid
+    print(f"last row: {new_task_id}")
     conn.close()
     open_modal(root, scroller, new_task_id, due_date)
     
@@ -213,7 +212,49 @@ def sort_list():
     tasks = cursor.fetchall()
     conn.close()
     return tasks
-def toggle_fill():
+
+
+
+import sqlite3
+
+def toggle_fill(event, lbl, style, row_id):
+    """Toggle the fill of the label to indicate done and update the DB."""
+    print("toggle fill clicked")
+    print(f"row_id: {row_id}")
+    
+    # Toggle the style of the label
+    current_style = lbl.cget("style")
+    new_style = "Toggled.TLabel" if current_style == "Default.TLabel" else "Default.TLabel"
+    lbl.configure(style=new_style)
+
+    try:
+        # Connect to the database
+        conn = sqlite3.connect("tasks.db")
+        cursor = conn.cursor()
+        
+        # Fetch the current 'complete' value
+        cursor.execute('SELECT complete FROM tasks WHERE id = ?', (row_id,))
+        result = cursor.fetchone()
+        
+        if result is not None:
+            current_value = result[0]
+    # Toggle the value of 'complete'
+            toggle = 0 if current_value == 1 else 1
+            # Toggle the value of 'complete'
+            
+            # Update the 'complete' value in the database
+            cursor.execute('UPDATE tasks SET complete = ? WHERE id = ?', (toggle, row_id))
+            print(f"Rowd id: {row_id} updated")
+            conn.commit()
+        else:
+            print(f"No task found with row_id {row_id}")
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+    finally:
+        # Always close the connection
+        conn.close()
+
+       
     pass
 def refresh_list(root, scroller):
     print("REFRESH called")

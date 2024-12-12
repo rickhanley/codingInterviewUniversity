@@ -24,13 +24,19 @@ def render_list(root, scroller):
     tasks = cursor.fetchall()
     conn.close()
     
+    style = ttk.Style(root)
+    style.configure("Default.TLabel", background="white", font=("Arial", 14), relief="groove", padding=(24, 15))
+    style.configure("Toggled.TLabel", background="lightblue", font=("Arial", 14), relief="groove", padding=(24, 15))
+    
+    
     for i, task in enumerate(tasks):
-        task_id, creation_date, complete, detail, due_date = task
+        row_id, creation_date, complete, detail, due_date = task
         padding_x = 50  # Horizontal padding
 
-        # completed_btn = ttk.Label(scroller, text="", font=("Arial", 12, "bold"), borderwidth=1, relief="groove", padding=(15, 15))
-        completed_btn = ttk.Label(scroller, text=f"", font=("Arial", 14), borderwidth=1, relief="groove", padding=(24, 15))
-        completed_btn.grid(row=i, column=0, padx=(15,15), sticky="ew")  # external padding
+        # completed_lbl = ttk.Label(scroller, text="", font=("Arial", 12, "bold"), borderwidth=1, relief="groove", padding=(15, 15))
+        completed_lbl = ttk.Label(scroller, text=f"", font=("Arial", 14), borderwidth=1, relief="groove", padding=(24, 15), style="Default.TLabel")
+        completed_lbl.grid(row=i, column=0, padx=(15,15), sticky="ew")  # external padding
+        completed_lbl.bind("<Button-1>", lambda e, lbl=completed_lbl, row_id = row_id: helpers.toggle_fill(e, lbl, style, row_id))
 
         label2 = tk.Label(
             scroller,
@@ -43,12 +49,12 @@ def render_list(root, scroller):
             font=("Arial", 14)
         )
         
-        row_id_map[label2] = task_id
+        row_id_map[label2] = row_id
         
         label2.grid(row=i, column=1, sticky="ew")
 
         # Bind the event to label2 for opening a modal
-        def on_label2_click(event, task_id=task_id, due_date=due_date): 
+        def on_label2_click(event, task_id=row_id, due_date=due_date): 
             helpers.open_modal(root, scroller, task_id, due_date)
         
         label2.bind("<Button-1>", on_label2_click)

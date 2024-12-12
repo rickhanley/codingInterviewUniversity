@@ -9,10 +9,9 @@ windll.shcore.SetProcessDpiAwareness(1)
 root = tk.Tk()
 root.tk.call('tk', 'scaling', 1)
 root.resizable(True, True)
-root.geometry("681x1000")
-root.minsize(681, 1000)
+root.geometry("681x950")
+root.minsize(681, 950)
 root.grid_columnconfigure(0, weight=1)
-
 
 
 style = ttk.Style()
@@ -37,8 +36,8 @@ heading.grid(row=0, pady=(20, 0))
 button_frame = tk.Frame(root, borderwidth=1, height=10)
 button_frame.grid(column=0, row=1, sticky="ew", padx=36, pady=10)
 
-button_gif = tk.PhotoImage(file="buttons/plus-square.png")
-new_btn = ttk.Button(button_frame, image=button_gif, style="RoundedButton.TButton", command= lambda: helpers.create_new_record(root, scroller))
+new_gif = tk.PhotoImage(file="buttons/plus-square.png")
+new_btn = ttk.Button(button_frame, image=new_gif, style="RoundedButton.TButton", command= lambda: helpers.create_new_record(root, scroller))
 new_btn.grid(row=0, column=0, padx=15, pady=15, sticky="ew")
 
 eye_gif = tk.PhotoImage(file="buttons/funnel.png")
@@ -56,7 +55,8 @@ refresh_btn.grid(row=0, column=3, padx=15, pady=15, sticky="ew")
 button_frame.grid_columnconfigure(0, weight=1)
 
 label_frame = tk.Frame(root)
-label_frame.grid(column=0, row=2, sticky="nsew", padx=(52, 55))
+# label_frame = tk.Frame(root, borderwidth=2, relief="solid")
+label_frame.grid(column=0, row=2, sticky="nsew", padx=(52, 55), pady=15)
 
 done_label = ttk.Label(label_frame, text=f"{u'\u2713'}", font=("Arial", 16, "bold"), borderwidth=1, relief="groove", padding=(15, 15))
 done_label.grid(row=0, column=0, sticky="ew")
@@ -69,8 +69,9 @@ due_by_label.grid(row=0, column=2, sticky="ew")
 label_frame.grid_columnconfigure(1, minsize=430, weight=1)   # Scalable task column
 # label_frame.grid_columnconfigure(2, weight=0, minsize=65)
 
+# content_frame = tk.Frame(root, borderwidth=2, relief="solid")
 content_frame = tk.Frame(root)
-content_frame.grid(column=0, row=3, sticky="nsew", padx=20, pady=10)
+content_frame.grid(column=0, row=3, sticky="nsew", padx=20)
 root.grid_rowconfigure(3, weight=1)  # Allow content_frame to expand vertically
 
 canvas = tk.Canvas(content_frame)
@@ -84,7 +85,7 @@ scrollbar = ttk.Scrollbar(content_frame, orient="vertical", command=canvas.yview
 scrollbar.grid(row=0, column=1, sticky="ns")
 canvas.configure(yscrollcommand=scrollbar.set)# Place scrollbar next to canvas
 
-scroller = tk.Frame(canvas, padx=15, pady=15)
+scroller = tk.Frame(canvas, padx=15)
 scroller.grid(sticky="nsew")
 
 scrollable_window = canvas.create_window((0, 0), window=scroller, anchor="nw")

@@ -30,7 +30,7 @@ def render_list(root, scroller):
         padding_x = 50  # Horizontal padding
 
         completed_btn = ttk.Button(scroller, style="SmallButton.TButton", command=helpers.toggle_fill)
-        label1 = tk.Label(scroller, text="", borderwidth=2, relief="groove", pady=15)
+        # label1 = tk.Label(scroller, text="", borderwidth=2, relief="groove", pady=15)
         completed_btn.grid(row=i, column=0, padx=15, pady=1, sticky="ew") # external padding
 
         label2 = tk.Label(
@@ -49,4 +49,4 @@ def render_list(root, scroller):
         label2.bind("<Button-1>", lambda event, lbl=label2: helpers.open_modal(root, scroller, row_id_map[lbl], due_date))
 
         label3 = tk.Label(scroller, text=f"{due_date}", borderwidth=2, relief="groove", padx=20, pady=15, background=f"{helpers.date_label_colour(due_date)}")
-        label3.grid(row=i, column=2, padx=15, pady=15, sticky="ew")
+        label3.grid(row=i, column=2, padx=15, pady=10, sticky="ew")
