@@ -93,7 +93,6 @@ def open_modal(root, scroller, row_id, due_date):
     
     if row_id is not None:
         details_text = get_row_text(row_id)
-
     else:
         details_text = ""
     
@@ -161,13 +160,18 @@ def open_modal(root, scroller, row_id, due_date):
             # Call the delete_record method to remove the blank record
             delete_entry(row_id, root, scroller, modal)
             modal.destroy()
+        else:
+            modal.destroy()
     modal.protocol("WM_DELETE_WINDOW", lambda: on_close(details_text))
     # Make the modal window modal
     modal.grab_set()
 
     
 def date_label_colour(due_date_str):
-    """Function to determine the colour coding of the data labels"""
+    """Function to determine the colour coding of the data labels
+       > 5 days to due date colour is green
+       3, 4 or 5 days colour is orange
+       <3 days is red"""
     due_date = datetime.strptime(due_date_str, "%d/%m/%y").date()
     today = date.today()
     days_diff = (due_date - today).days

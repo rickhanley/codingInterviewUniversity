@@ -36,8 +36,8 @@ heading.grid(row=0, pady=(20, 0))
 button_frame = tk.Frame(root, borderwidth=1, height=10)
 button_frame.grid(column=0, row=1, sticky="ew", padx=36, pady=10)
 
-new_gif = tk.PhotoImage(file="buttons/plus-square.png")
-new_btn = ttk.Button(button_frame, image=new_gif, style="RoundedButton.TButton", command= lambda: helpers.create_new_record(root, scroller))
+button_gif = tk.PhotoImage(file="buttons/plus-square.png")
+new_btn = ttk.Button(button_frame, image=button_gif, style="RoundedButton.TButton", command= lambda: helpers.create_new_record(root, scroller))
 new_btn.grid(row=0, column=0, padx=15, pady=15, sticky="ew")
 
 eye_gif = tk.PhotoImage(file="buttons/funnel.png")
