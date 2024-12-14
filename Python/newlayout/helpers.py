@@ -90,7 +90,7 @@ def existing_entry_update(modal_text, root, scroller, row_id, modal):
     conn.close()
     
     modal.destroy()
-    renderlist.render_list(root, scroller)
+    renderlist.render_list(root, scroller, "standard")
 
 # def new_entry_save(modal_text, root, scroller, modal):
 #     print("New entry save")
@@ -166,7 +166,7 @@ def open_modal(root, scroller, row_id, due_date):
     save_btn.grid(row=1, column=0, padx=30, pady=30)
     date_label = tk.Button(modal, text=f"{date_for_display(due_date)}", font=("Arial", 20), command= lambda: date_picker(modal, date_label, row_id), padx=15, pady=15)
     date_label.grid(row=1, column=1, padx=30, pady=30)
-    delete_button = tk.Button(modal, text="Delete", font=("Arial", 20), command= lambda: delete_entry(row_id, root, scroller, modal), padx=15, pady=15)
+    delete_button = tk.Button(modal, text="Delete", font=("Arial", 20), command= lambda: delete_entry(row_id, root, scroller, modal, "standard"), padx=15, pady=15)
     delete_button.grid(row=1, column=2, padx=30, pady=30)
         
         
@@ -218,14 +218,14 @@ def create_new_record(root, scroller):
     conn.close()
     open_modal(root, scroller, new_task_id, due_date)
     
-def delete_entry(row_id, root, scroller, modal):
+def delete_entry(row_id, root, scroller, modal, sort_order):
     conn = sqlite3.connect("tasks.db")
     cursor = conn.cursor()
     query = "DELETE FROM tasks WHERE id = ?"
     cursor.execute(query, (row_id,))
     conn.commit()
     conn.close()
-    refresh_list(root,scroller)
+    refresh_list(root,scroller, sort_order)
     modal.destroy()
     
 def hide_complete():
