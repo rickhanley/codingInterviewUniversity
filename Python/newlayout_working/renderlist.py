@@ -10,7 +10,7 @@ def update_wrap(event, label, padding_x):
     # Dynamically adjust wraplength based on label width and padding
     label.configure(wraplength=label.winfo_width() - padding_x * 2)
 
-def render_list(root, scroller, sort_order):
+def render_list(root, scroller):
     # Clear any existing widgets
     for widget in scroller.winfo_children():
         widget.destroy()
@@ -18,10 +18,7 @@ def render_list(root, scroller, sort_order):
     conn = sqlite3.connect("tasks.db")
     cursor = conn.cursor()
     
-    if sort_order == "standard":
-        query = "SELECT * FROM tasks WHERE complete = 0"
-    elif sort_order == "due_date":
-        query = "SELECT * FROM tasks WHERE complete = 0 ORDER BY due_date ASC"
+    query = "SELECT * FROM tasks WHERE complete = 0"
     cursor.execute(query)
     
     tasks = cursor.fetchall()
@@ -68,5 +65,5 @@ def render_list(root, scroller, sort_order):
         
         label2.bind("<Configure>", on_label2_resize)
 
-        label3 = tk.Label(scroller, text=f"{helpers.date_for_display(due_date)}", borderwidth=1, relief="solid", font=("Arial", 14), pady=16, padx=15, background=f"{helpers.date_label_colour(due_date)}")
+        label3 = tk.Label(scroller, text=f"{due_date}", borderwidth=1, relief="solid", font=("Arial", 14), pady=16, padx=15, background=f"{helpers.date_label_colour(due_date)}")
         label3.grid(row=i, column=2, pady=15, padx=(16, 6), sticky="ew")

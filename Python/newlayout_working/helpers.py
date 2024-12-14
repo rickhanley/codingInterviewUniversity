@@ -6,24 +6,9 @@ import renderlist
 # from tkinter import *
 from tkcalendar import Calendar
 
-def date_for_saving(date_string):
-    """Take in string of fromat dd/mm/yy and change to formater YYYY/mm/yy"""
-    date_object = datetime.strptime(date_string, "%d/%m/%y")
-    date_for_saving = date_object.strftime("%Y/%m/%d")
-    return date_for_saving
-
-def date_for_display(date_string):
-    """Take in string of format YYYY/mm/dd and change to formater dd/mm/yy"""
-    date_object = datetime.strptime(date_string, "%Y/%m/%d")
-    date_for_display = date_object.strftime("%d/%m/%y")
-    return date_for_display
-
 
 def todays_date_formatted(today_unformatted):
-    print(f"todays_date_formatted input is: {today_unformatted}")
-    today_formatted = today_unformatted.strftime("%Y/%m/%d")
-    print(f"todays_date_formatted input after conversion is: {today_formatted}")
-    return today_formatted
+    return today_unformatted.strftime("%d/%m/%y")
 
 def date_picker(parent_modal, date_label, row_id):
     # Create a new Toplevel window for the date picker
@@ -43,7 +28,6 @@ def date_picker(parent_modal, date_label, row_id):
 
     # Add a button to confirm the date selection
     def confirm_date():
-        """"""
         selected_date = calendar.get_date()
         print(f"Selected Date from confirm date: {selected_date}")
         print(f"row_id: {row_id}")
@@ -51,7 +35,7 @@ def date_picker(parent_modal, date_label, row_id):
             conn = sqlite3.connect("tasks.db")
             cursor = conn.cursor()
             # need to address due_date but for now will be left unchanged
-            cursor.execute('UPDATE tasks SET due_date = ? WHERE id = ?', (date_for_saving(selected_date), row_id))
+            cursor.execute('UPDATE tasks SET due_date = ? WHERE id = ?', (selected_date, row_id))
             conn.commit()
             conn.close()
         except sqlite3.Error as e:
@@ -164,7 +148,7 @@ def open_modal(root, scroller, row_id, due_date):
     # Save button
     save_btn = tk.Button(modal, text="Save", font=("Arial", 20), command= lambda: existing_entry_update(modal_text.get('1.0', 'end').strip(), root, scroller, row_id, modal), padx=15, pady=15)
     save_btn.grid(row=1, column=0, padx=30, pady=30)
-    date_label = tk.Button(modal, text=f"{date_for_display(due_date)}", font=("Arial", 20), command= lambda: date_picker(modal, date_label, row_id), padx=15, pady=15)
+    date_label = tk.Button(modal, text=f"{due_date}", font=("Arial", 20), command= lambda: date_picker(modal, date_label, row_id), padx=15, pady=15)
     date_label.grid(row=1, column=1, padx=30, pady=30)
     delete_button = tk.Button(modal, text="Delete", font=("Arial", 20), command= lambda: delete_entry(row_id, root, scroller, modal), padx=15, pady=15)
     delete_button.grid(row=1, column=2, padx=30, pady=30)
@@ -188,15 +172,9 @@ def date_label_colour(due_date_str):
        > 5 days to due date colour is green
        3, 4 or 5 days colour is orange
        <3 days is red"""
-    
-    # Convert due_date_str (string) into a datetime object and then get the date part
-    due_date = datetime.strptime(due_date_str, "%Y/%m/%d").date()  # Update format to %Y/%m/%d for yyyy/mm/dd
-    today = date.today()  # Get today's date
-    
-    # Calculate the difference in days
+    due_date = datetime.strptime(due_date_str, "%d/%m/%y").date()
+    today = date.today()
     days_diff = (due_date - today).days
-    
-    # Color coding based on the days difference
     if days_diff < 3:  # Past due
         return "#e2738c"
     elif 0 <= days_diff <= 5:  # Due today or within 3 days
@@ -209,9 +187,9 @@ def create_new_record(root, scroller):
     modal_text=''
     conn = sqlite3.connect("tasks.db")
     cursor = conn.cursor()
-    due_date = todays_date_formatted(datetime.today())
-    creation_date = due_date
-    cursor.execute('INSERT INTO tasks (detail, creation_date, complete, due_date) VALUES (?, ?, ?, ?)', (modal_text, creation_date, 0, due_date))
+    due_date = todays_date_formatted(datetime.now())
+    formatted_date = due_date
+    cursor.execute('INSERT INTO tasks (detail, creation_date, complete, due_date) VALUES (?, ?, ?, ?)', (modal_text, formatted_date, 0, due_date))
     conn.commit()
     new_task_id = cursor.lastrowid
     print(f"last row: {new_task_id}")
@@ -230,6 +208,18 @@ def delete_entry(row_id, root, scroller, modal):
     
 def hide_complete():
     pass
+def sort_list():
+    conn = sqlite3.connect("tasks.db")
+    cursor = conn.cursor()
+    query = "SELECT * FROM tasks WHERE complete = 0 ORDER BY due_date ASC"
+    cursor.execute(query)
+    tasks = cursor.fetchall()
+    conn.close()
+    return tasks
+
+
+
+import sqlite3
 
 def toggle_fill(event, lbl, style, row_id):
     """Toggle the fill of the label to indicate done and update the DB."""
@@ -253,7 +243,7 @@ def toggle_fill(event, lbl, style, row_id):
         if result is not None:
             current_value = result[0]
     # Toggle the value of 'complete'
-            toggle = 0 if current_value == 1 else 1
+            toggle = 0 if current_value == 1 else 1a
             # Toggle the value of 'complete'
             
             # Update the 'complete' value in the database
@@ -267,20 +257,9 @@ def toggle_fill(event, lbl, style, row_id):
     finally:
         # Always close the connection
         conn.close()
-        
-def sort_list(root, scroller, sort_order_dict):
-    # print(f"sort called with: {sort_order}")
-    if sort_order_dict["sort_order"] == "standard":
-        sort_order_dict["sort_order"] = "due_date"
-        print("sort order changed to due_date")
-    else:
-        sort_order_dict["sort_order"] = "standard"
-        print("sort order changed to standard")
-    
-    # Call render_list with updated sort_order
-    renderlist.render_list(root, scroller, sort_order_dict["sort_order"])  
-        
 
-def refresh_list(root, scroller, sort_order):
+       
+    pass
+def refresh_list(root, scroller):
     print("REFRESH called")
-    renderlist.render_list(root, scroller, sort_order)
+    renderlist.render_list(root, scroller)
