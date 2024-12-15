@@ -14,7 +14,21 @@ def sort_order_toggle(option):
             sort_order_dict["sort_order"] = "standard"
             return sort_order_dict["sort_order"]
         
+filter_type_dict = {"filter_type": "filtered"}
 
+def fitler_type_toggle(option):
+    """"""
+    # get current state
+    if option == 0:
+        return filter_type_dict["filter_type"]
+    # toggle state
+    elif option == 1:   
+        if filter_type_dict["filter_type"] == "filtered":
+            filter_type_dict["filter_type"] = "unfiltered"
+            return filter_type_dict["filter_type"]
+        elif filter_type_dict["filter_type"] == "unfiltered":
+            filter_type_dict["filter_type"] = "filtered"
+            return filter_type_dict["filter_type"]
     
 
 # print(sort_order_toggle(0))

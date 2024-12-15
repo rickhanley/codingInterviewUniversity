@@ -226,7 +226,7 @@ def delete_entry(row_id, root, scroller, modal, sort_order):
     cursor.execute(query, (row_id,))
     conn.commit()
     conn.close()
-    refresh_list(root,scroller, sort_order)
+    refresh_list(root,scroller)
     modal.destroy()
     
 def hide_complete(root, scroller):
@@ -285,5 +285,5 @@ def sort_list(root, scroller):
         
 
 def refresh_list(root, scroller):
-    print("REFRESH called")
+    print(f"REFRESH called with {sort_state.sort_order_toggle(0)}")
     renderlist.render_list(root, scroller)
