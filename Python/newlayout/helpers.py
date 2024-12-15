@@ -5,6 +5,7 @@ import sqlite3
 import renderlist
 # from tkinter import *
 from tkcalendar import Calendar
+import sort_state
 
 def date_for_saving(date_string):
     """Take in string of fromat dd/mm/yy and change to formater YYYY/mm/yy"""
@@ -90,7 +91,7 @@ def existing_entry_update(modal_text, root, scroller, row_id, modal):
     conn.close()
     
     modal.destroy()
-    renderlist.render_list(root, scroller, "standard")
+    renderlist.render_list(root, scroller)
 
 # def new_entry_save(modal_text, root, scroller, modal):
 #     print("New entry save")
@@ -228,7 +229,8 @@ def delete_entry(row_id, root, scroller, modal, sort_order):
     refresh_list(root,scroller, sort_order)
     modal.destroy()
     
-def hide_complete():
+def hide_complete(root, scroller):
+    print("hide complete called")
     pass
 
 def toggle_fill(event, lbl, style, row_id):
@@ -268,19 +270,20 @@ def toggle_fill(event, lbl, style, row_id):
         # Always close the connection
         conn.close()
         
-def sort_list(root, scroller, sort_order_dict):
+def sort_list(root, scroller):
+    current_state = sort_state.sort_order_toggle(0)
     # print(f"sort called with: {sort_order}")
-    if sort_order_dict["sort_order"] == "standard":
-        sort_order_dict["sort_order"] = "due_date"
-        print("sort order changed to due_date")
-    else:
-        sort_order_dict["sort_order"] = "standard"
-        print("sort order changed to standard")
+    if current_state == "standard":
+        current_state = sort_state.sort_order_toggle(1)
+        print(f" (IF) sort order changed to: {current_state}")
+    elif current_state == "due_date":
+        current_state = sort_state.sort_order_toggle(1)
+        print(f"(ELIF) sort order changed to: {current_state}")
     
     # Call render_list with updated sort_order
-    renderlist.render_list(root, scroller, sort_order_dict["sort_order"])  
+    renderlist.render_list(root, scroller)  
         
 
-def refresh_list(root, scroller, sort_order):
+def refresh_list(root, scroller):
     print("REFRESH called")
-    renderlist.render_list(root, scroller, sort_order)
+    renderlist.render_list(root, scroller)
