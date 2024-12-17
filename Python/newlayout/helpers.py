@@ -6,6 +6,12 @@ import renderlist
 # from tkinter import *
 from tkcalendar import Calendar
 import sort_state
+import os
+
+base_dir = os.path.dirname(os.path.abspath(__file__))  # Directory where the script is located
+db_path = os.path.join(base_dir, "data", "tasks.db")
+
+db_path
 
 def date_for_saving(date_string):
     """Take in string of fromat dd/mm/yy and change to formater YYYY/mm/yy"""
@@ -49,7 +55,7 @@ def date_picker(parent_modal, date_label, row_id):
         print(f"Selected Date from confirm date: {selected_date}")
         print(f"row_id: {row_id}")
         try:
-            conn = sqlite3.connect("tasks.db")
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
             # need to address due_date but for now will be left unchanged
             cursor.execute('UPDATE tasks SET due_date = ? WHERE id = ?', (date_for_saving(selected_date), row_id))
@@ -70,7 +76,7 @@ def date_picker(parent_modal, date_label, row_id):
     cancel_button.grid(column=1, row=1, padx=20, pady=10)
 
 def get_row_text(row_id):
-    conn = sqlite3.connect("tasks.db")
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
     query = "SELECT detail FROM tasks WHERE id = ?"
@@ -82,7 +88,7 @@ def get_row_text(row_id):
 
 def existing_entry_update(modal_text, root, scroller, row_id, modal):
     print(f"Exisitng entry, ROW_ID: {row_id}")
-    conn = sqlite3.connect("tasks.db")
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     # need to address due_date but for now will be left unchanged
     cursor.execute('UPDATE tasks SET detail = ? WHERE id = ?', (modal_text, row_id))
@@ -95,7 +101,7 @@ def existing_entry_update(modal_text, root, scroller, row_id, modal):
 
 # def new_entry_save(modal_text, root, scroller, modal):
 #     print("New entry save")
-#     conn = sqlite3.connect("tasks.db")
+#     conn = sqlite3.connect("db_path")
 #     cursor = conn.cursor()
 #     formatted_date = todays_date_formatted(datetime.now())
 #     due_date = formatted_date
@@ -208,7 +214,7 @@ def date_label_colour(due_date_str):
 def create_new_record(root, scroller):
     print("create new")
     modal_text=''
-    conn = sqlite3.connect("tasks.db")
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     due_date = todays_date_formatted(datetime.today())
     creation_date = due_date
@@ -219,8 +225,8 @@ def create_new_record(root, scroller):
     conn.close()
     open_modal(root, scroller, new_task_id, due_date)
     
-def delete_entry(row_id, root, scroller, modal, sort_order):
-    conn = sqlite3.connect("tasks.db")
+def delete_entry(row_id, root, scroller, modal, sort_order=None):
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     query = "DELETE FROM tasks WHERE id = ?"
     cursor.execute(query, (row_id,))
@@ -231,13 +237,12 @@ def delete_entry(row_id, root, scroller, modal, sort_order):
     
 def hide_complete(root, scroller):
     print("hide complete called")
-    conn = sqlite3.connect("tasks.db")
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    query = "SELECT * FROM tasks"
+    query = "SELECT * FROM tasks WHERE complete = 1 ORDER BY creation_date ASC"
     cursor.execute(query)
     print("query processed")
     renderlist.render_list(root, scroller, cursor)
-    conn.commit()
     conn.close()
 
 
@@ -247,13 +252,19 @@ def toggle_fill(event, lbl, style, row_id):
     print(f"row_id: {row_id}")
     
     # Toggle the style of the label
-    current_style = lbl.cget("style")
-    new_style = "Toggled.TLabel" if current_style == "Default.TLabel" else "Default.TLabel"
-    lbl.configure(style=new_style)
+    if lbl.cget("text") == "":
+        lbl.configure(text="\u2714", padding=(17, 15))
+    else:
+        lbl.configure(text="", padding=(24,15))
+        
+    # current_style = lbl.cget("style")
+    # lbl.configure(text="\u2713", padding=(17, 15))
+    # new_style = "Toggled.TLabel" if current_style == "Default.TLabel" else "Default.TLabel"
+    # lbl.configure(style=new_style)
 
     try:
         # Connect to the database
-        conn = sqlite3.connect("tasks.db")
+        conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
         
         # Fetch the current 'complete' value

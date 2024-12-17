@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-import renderlist
+import renderlist, os, sys
 from ctypes import windll
 import helpers
 windll.shcore.SetProcessDpiAwareness(1)
@@ -12,6 +12,7 @@ root.resizable(True, True)
 root.geometry("681x950")
 root.minsize(681, 950)
 root.grid_columnconfigure(0, weight=1)
+
 
 sort_order_dict = {"sort_order": "standard"}
 
