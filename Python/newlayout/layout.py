@@ -95,14 +95,21 @@ scrollable_window = canvas.create_window((0, 0), window=scroller, anchor="nw")
 def configure_scroll_region(event):
     bbox = canvas.bbox("all")
     print(f"Scroll region bbox: {bbox}")  # Debug print
+    print(f"Canvas size: {canvas.winfo_width()}x{canvas.winfo_height()}")
     if bbox:
         canvas.configure(scrollregion=bbox)
-        scroller.update_idletasks()# Update the scrollregion
+        scroller.update_idletasks()
+        canvas_height = canvas.winfo_height()
+        content_height = bbox[3]
+
+        # Prevent scrolling if content fits within the canvas
+        if content_height <= canvas_height:
+            canvas.yview_moveto(0)  # Reset scroll to the top# Update the scrollregion
   # Update the scrollregion to match the scroller's size
 
 canvas.bind("<Configure>", lambda event: canvas.itemconfig(scrollable_window, width=event.width))  # Ensure the window width follows canvas width
 scroller.bind("<Configure>", configure_scroll_region)  # Update scrollregion whenever scroller's size changes
-
+canvas.update_idletasks()
 # Configure columns in the scroller (for content layout inside the scroller)
 scroller.grid_columnconfigure(0, minsize=30, weight=0)
 scroller.grid_columnconfigure(1, weight=10, minsize=402)

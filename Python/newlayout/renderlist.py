@@ -11,28 +11,30 @@ def update_wrap(event, label, padding_x):
     # Dynamically adjust wraplength based on label width and padding
     label.configure(wraplength=label.winfo_width() - padding_x * 2)
 
-def render_list(root, scroller):
+def render_list(root, scroller, data_set=None):
     option = 0
     current_state = sort_state.sort_order_toggle(0)
     # Clear any existing widgets
     for widget in scroller.winfo_children():
         widget.destroy()
+    print(f"Remaining widgets: {scroller.winfo_children()}")  # Should be empty
     
     conn = sqlite3.connect("tasks.db")
     cursor = conn.cursor()
-    if option == 0:
-        if current_state == "standard":
-            query = "SELECT * FROM tasks WHERE complete = 0"
-        elif current_state == "due_date":
-            query = "SELECT * FROM tasks WHERE complete = 0 ORDER BY due_date ASC"
-    elif option == 1:
-        if current_state == "standard":
-            query = "SELECT * FROM tasks"
-        elif current_state == "due_date":
-            query = "SELECT * FROM tasks ORDER BY due_date ASC"
-            
-    cursor.execute(query)
-    
+    if data_set == None:
+        if option == 0:
+            if current_state == "standard":
+                query = "SELECT * FROM tasks WHERE complete = 0"
+            elif current_state == "due_date":
+                query = "SELECT * FROM tasks WHERE complete = 0 ORDER BY due_date ASC"
+        elif option == 1:
+            if current_state == "standard":
+                query = "SELECT * FROM tasks"
+            elif current_state == "due_date":
+                query = "SELECT * FROM tasks ORDER BY due_date ASC"
+        cursor.execute(query)
+    elif data_set:
+        cursor = data_set
     tasks = cursor.fetchall()
     conn.close()
     
@@ -42,9 +44,11 @@ def render_list(root, scroller):
     
     
     for i, task in enumerate(tasks):
+        
         row_id, creation_date, complete, detail, due_date = task
         padding_x = 50  # Horizontal padding
 
+        print(f"Placing task {i} at row {i}: {detail}, {due_date}")
         # completed_lbl = ttk.Label(scroller, text="", font=("Arial", 12, "bold"), borderwidth=1, relief="groove", padding=(15, 15))
         completed_lbl = ttk.Label(scroller, text=f"", font=("Arial", 14), borderwidth=1, relief="groove", padding=(24, 15), style="Default.TLabel")
         completed_lbl.grid(row=i, column=0, padx=(15,15), sticky="ew")  # external padding
@@ -78,4 +82,4 @@ def render_list(root, scroller):
         label2.bind("<Configure>", on_label2_resize)
 
         label3 = tk.Label(scroller, text=f"{helpers.date_for_display(due_date)}", borderwidth=1, relief="solid", font=("Arial", 14), pady=16, padx=15, background=f"{helpers.date_label_colour(due_date)}")
-        label3.grid(row=i, column=2, pady=15, padx=(16, 6), sticky="ew")
+        label3.grid(row=i, column=2, pady=3, padx=(16, 6), sticky="ew")

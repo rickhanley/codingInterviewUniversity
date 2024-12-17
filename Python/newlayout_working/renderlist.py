@@ -2,7 +2,6 @@ import sqlite3
 from tkinter import ttk
 import tkinter as tk
 import helpers
-
 # test data for date fields
 row_id_map = {}
 

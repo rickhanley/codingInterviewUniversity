@@ -231,7 +231,15 @@ def delete_entry(row_id, root, scroller, modal, sort_order):
     
 def hide_complete(root, scroller):
     print("hide complete called")
-    pass
+    conn = sqlite3.connect("tasks.db")
+    cursor = conn.cursor()
+    query = "SELECT * FROM tasks"
+    cursor.execute(query)
+    print("query processed")
+    renderlist.render_list(root, scroller, cursor)
+    conn.commit()
+    conn.close()
+
 
 def toggle_fill(event, lbl, style, row_id):
     """Toggle the fill of the label to indicate done and update the DB."""

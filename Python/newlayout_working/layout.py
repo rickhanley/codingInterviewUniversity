@@ -83,20 +83,32 @@ content_frame.grid_columnconfigure(0, weight=1, minsize=402)
 
 scrollbar = ttk.Scrollbar(content_frame, orient="vertical", command=canvas.yview)
 scrollbar.grid(row=0, column=1, sticky="ns")
+
+(f"Scrollregion: {canvas.cget('scrollregion')}")
 canvas.configure(yscrollcommand=scrollbar.set)# Place scrollbar next to canvas
 
 scroller = tk.Frame(canvas, padx=15)
 scroller.grid(sticky="nsew")
+scrollbar.config(command=scroller.yview)
 
 scrollable_window = canvas.create_window((0, 0), window=scroller, anchor="nw")
 
 # This function adjusts the scroll region when content inside scroller changes size
-def configure_scroll_region(event):
-    bbox = canvas.bbox("all")
-    print(f"Scroll region bbox: {bbox}")  # Debug print
+def configure_scroll_region(event=None):
+    bbox = canvas.bbox("all")  # Get the bounding box of all items in the canvas
     if bbox:
-        canvas.configure(scrollregion=bbox)
-        scroller.update_idletasks()# Update the scrollregion
+        content_height = bbox[3] - bbox[1]  # Total height of the scroller's content
+        canvas_height = canvas.winfo_height()  # Visible height of the canvas
+
+        if content_height > canvas_height:
+            # Enable scrolling
+            canvas.configure(scrollregion=bbox)
+            scrollbar.grid()  # Ensure scrollbar is visible
+        else:
+            # Disable scrolling
+            canvas.configure(scrollregion=(0, 0, canvas.winfo_width(), canvas_height))
+            scrollbar.grid_remove()  # Hide scrollbar
+
   # Update the scrollregion to match the scroller's size
 
 canvas.bind("<Configure>", lambda event: canvas.itemconfig(scrollable_window, width=event.width))  # Ensure the window width follows canvas width
@@ -108,5 +120,6 @@ scroller.grid_columnconfigure(1, weight=10, minsize=402)
 scroller.grid_columnconfigure(2, weight=0, minsize=75)
 
 renderlist.render_list(root, scroller)
+configure_scroll_region(None)
 root.update_idletasks()
 root.mainloop()

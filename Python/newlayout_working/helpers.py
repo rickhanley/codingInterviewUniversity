@@ -6,7 +6,7 @@ import renderlist
 # from tkinter import *
 from tkcalendar import Calendar
 
-
+print
 def todays_date_formatted(today_unformatted):
     return today_unformatted.strftime("%d/%m/%y")
 
@@ -243,7 +243,7 @@ def toggle_fill(event, lbl, style, row_id):
         if result is not None:
             current_value = result[0]
     # Toggle the value of 'complete'
-            toggle = 0 if current_value == 1 else 1a
+            toggle = 0 if current_value == 1 else 1
             # Toggle the value of 'complete'
             
             # Update the 'complete' value in the database
