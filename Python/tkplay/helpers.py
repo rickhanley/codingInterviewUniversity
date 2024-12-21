@@ -20,7 +20,7 @@ def date_picker(parent_modal):
     date_modal.grab_set()
 
     # Add a Calendar widget to the date modal
-    calendar = Calendar(date_modal, date_pattern="dd/mm/yy")
+    calendar = Calendar(date_modal, date_pattern="dd/mm/yy", showweeknumbers=False)
     calendar.grid(padx=20, pady=20)
 
     # Add a button to confirm the date selection

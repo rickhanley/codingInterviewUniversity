@@ -4,9 +4,9 @@ import tkinter as tk
 import helpers
 import sort_state
 import os
+from helpers import get_database_path
 
-base_dir = os.path.dirname(os.path.abspath(__file__))  # Directory where the script is located
-db_path = os.path.join(base_dir, "data", "tasks.db")
+db_path = get_database_path()
 
 # test data for date fields
 row_id_map = {}
@@ -21,7 +21,7 @@ def render_list(root, scroller, data_set=None):
     # Clear any existing widgets
     for widget in scroller.winfo_children():
         widget.destroy()
-    print(f"Remaining widgets: {scroller.winfo_children()}")  # Should be empty
+    # print(f"Remaining widgets: {scroller.winfo_children()}")  # Should be empty
     
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -52,7 +52,7 @@ def render_list(root, scroller, data_set=None):
         row_id, creation_date, complete, detail, due_date = task
         padding_x = 50  # Horizontal padding
 
-        print(f"Placing task {i} at row {i}: {detail}, {due_date}")
+        # print(f"Placing task {i} at row {i}: {detail}, {due_date}")
         # completed_lbl = ttk.Label(scroller, text="", font=("Arial", 12, "bold"), borderwidth=1, relief="groove", padding=(15, 15))
         if complete:
             completed_lbl = ttk.Label(scroller, text=f"\u2714", font=("Arial", 14), borderwidth=1, relief="groove", padding=(17, 15), style="Default.TLabel")

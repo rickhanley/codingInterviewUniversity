@@ -13,22 +13,32 @@ root.geometry("681x950")
 root.minsize(681, 950)
 root.grid_columnconfigure(0, weight=1)
 
+def get_resource_path(relative_path):
+    """Get the absolute path to a resource, works for PyInstaller."""
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
+
 
 sort_order_dict = {"sort_order": "standard"}
 
 style = ttk.Style()
 small_style = ttk.Style()
 
+# style.theme_use("clam")
+
 style.configure("RoundedButton.TButton",
                 padding=(20,20),
                 relief="flat",
                 foreground="BLACK",
+                background="white",
                 font=("Arial", 20, "bold"))
 
 small_style.configure("SmallButton.TButton",
                 padding=(3, 22),  # Adjust padding for the desired this controls the button size in effect
                 font=("Arial", 4),  # Smaller font for compact buttons, also controls button size
                 relief="flat")
+
+
 
 sort_order = "standard"
 
@@ -38,20 +48,24 @@ heading.grid(row=0, pady=(20, 0))
 button_frame = tk.Frame(root, borderwidth=1, height=10)
 button_frame.grid(column=0, row=1, sticky="ew", padx=36, pady=10)
 
-plus_button_gif = tk.PhotoImage(file="buttons/plus-square.png")
-plus_btn = ttk.Button(button_frame, image=plus_button_gif, style="RoundedButton.TButton", command = lambda: helpers.create_new_record(root, scroller))
+plus_button_gif = tk.PhotoImage(file=get_resource_path("buttons/plus-square.png"))
+plus_btn = ttk.Button(button_frame, image=plus_button_gif, style="RoundedButton.TButton",
+                      command=lambda: helpers.create_new_record(root, scroller))
 plus_btn.grid(row=0, column=0, padx=15, pady=15, sticky="ew")
 
-funnel_gif = tk.PhotoImage(file="buttons/funnel.png")
-funnel_btn = ttk.Button(button_frame, image=funnel_gif, style="RoundedButton.TButton", command = lambda: helpers.hide_complete(root, scroller))
+funnel_gif = tk.PhotoImage(file=get_resource_path("buttons/funnel.png"))
+funnel_btn = ttk.Button(button_frame, image=funnel_gif, style="RoundedButton.TButton",
+                        command=lambda: helpers.hide_complete(root, scroller))
 funnel_btn.grid(row=0, column=1, padx=15, pady=15, sticky="ew")
 
-sort_gif = tk.PhotoImage(file="buttons/arrows-down-up.png")
-sort_btn = ttk.Button(button_frame, image=sort_gif, style="RoundedButton.TButton", command = lambda: helpers.sort_list(root, scroller))
+sort_gif = tk.PhotoImage(file=get_resource_path("buttons/arrows-down-up.png"))
+sort_btn = ttk.Button(button_frame, image=sort_gif, style="RoundedButton.TButton",
+                      command=lambda: helpers.sort_list(root, scroller))
 sort_btn.grid(row=0, column=2, padx=15, pady=15, sticky="ew")
 
-refresh_gif = tk.PhotoImage(file="buttons/arrows-clockwise.png")
-refresh_btn = ttk.Button(button_frame, image=refresh_gif, style="RoundedButton.TButton", command= lambda: helpers.refresh_list(root, scroller))
+refresh_gif = tk.PhotoImage(file=get_resource_path("buttons/arrows-clockwise.png"))
+refresh_btn = ttk.Button(button_frame, image=refresh_gif, style="RoundedButton.TButton",
+                         command=lambda: helpers.refresh_list(root, scroller))
 refresh_btn.grid(row=0, column=3, padx=15, pady=15, sticky="ew")
 
 button_frame.grid_columnconfigure(0, weight=1)
@@ -95,8 +109,8 @@ scrollable_window = canvas.create_window((0, 0), window=scroller, anchor="nw")
 # This function adjusts the scroll region when content inside scroller changes size
 def configure_scroll_region(event):
     bbox = canvas.bbox("all")
-    print(f"Scroll region bbox: {bbox}")  # Debug print
-    print(f"Canvas size: {canvas.winfo_width()}x{canvas.winfo_height()}")
+    # print(f"Scroll region bbox: {bbox}")  # Debug print
+    # print(f"Canvas size: {canvas.winfo_width()}x{canvas.winfo_height()}")
     if bbox:
         canvas.configure(scrollregion=bbox)
         scroller.update_idletasks()

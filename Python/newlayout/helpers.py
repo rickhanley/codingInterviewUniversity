@@ -6,12 +6,40 @@ import renderlist
 # from tkinter import *
 from tkcalendar import Calendar
 import sort_state
-import os
+import os, shutil, sys
+from pathlib import Path
 
-base_dir = os.path.dirname(os.path.abspath(__file__))  # Directory where the script is located
-db_path = os.path.join(base_dir, "data", "tasks.db")
+Calendar
 
-db_path
+def get_database_path():
+    """Determine the correct database path based on the environment."""
+    # Check if running as a PyInstaller bundle
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        # Running as a bundled app
+        base_dir = sys._MEIPASS  # Temp directory created by PyInstaller
+    else:
+        # Running in development
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # In development, return the existing database path
+    db_path = os.path.join(base_dir, "data", "tasks.db")
+
+    # In production, ensure the database is writable
+    if getattr(sys, 'frozen', False):
+        # Use the user's writable application data directory
+        app_data_dir = Path.home() / ".quicktask"
+        app_data_dir.mkdir(parents=True, exist_ok=True)
+        writable_db_path = app_data_dir / "tasks.db"
+
+        # If the database doesn't exist, copy it from the bundled directory
+        if not writable_db_path.exists():
+            shutil.copy(db_path, writable_db_path)
+
+        return str(writable_db_path)
+
+    return db_path
+
+db_path = get_database_path()
 
 def date_for_saving(date_string):
     """Take in string of fromat dd/mm/yy and change to formater YYYY/mm/yy"""
@@ -27,9 +55,9 @@ def date_for_display(date_string):
 
 
 def todays_date_formatted(today_unformatted):
-    print(f"todays_date_formatted input is: {today_unformatted}")
+    # print(f"todays_date_formatted input is: {today_unformatted}")
     today_formatted = today_unformatted.strftime("%Y/%m/%d")
-    print(f"todays_date_formatted input after conversion is: {today_formatted}")
+    # print(f"todays_date_formatted input after conversion is: {today_formatted}")
     return today_formatted
 
 def date_picker(parent_modal, date_label, row_id):
@@ -45,15 +73,16 @@ def date_picker(parent_modal, date_label, row_id):
     date_modal.grab_set()
 
     # Add a Calendar widget to the date modal
-    calendar = Calendar(date_modal, date_pattern="dd/mm/yy", font=("Arial", 20))
+    calendar = Calendar(date_modal, date_pattern="dd/mm/yy", font=("Arial", 22), showweeknumbers=False)
+    calendar.config(background="lightblue", foreground="black")
     calendar.grid(padx=20, pady=20, columnspan=2)
 
     # Add a button to confirm the date selection
     def confirm_date():
         """"""
         selected_date = calendar.get_date()
-        print(f"Selected Date from confirm date: {selected_date}")
-        print(f"row_id: {row_id}")
+        # print(f"Selected Date from confirm date: {selected_date}")
+        # print(f"row_id: {row_id}")
         try:
             conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
@@ -87,7 +116,11 @@ def get_row_text(row_id):
     return result[0] if result else None
 
 def existing_entry_update(modal_text, root, scroller, row_id, modal):
-    print(f"Exisitng entry, ROW_ID: {row_id}")
+    if not modal_text:
+        # print("Text box empty - deleting")
+        delete_entry(row_id, root, scroller, modal)
+    # print(f"Modal text print: {modal_text}")
+    # print(f"Exisitng entry, ROW_ID: {row_id}")
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     # need to address due_date but for now will be left unchanged
@@ -119,7 +152,7 @@ def open_modal(root, scroller, row_id, due_date):
     else:
         details_text = ""
     
-    print(f"Row ID: {row_id}")
+    # print(f"Row ID: {row_id}")
     """Function to show the modal window to accept task-specific data."""
     
     modal = tk.Toplevel(root)
@@ -145,7 +178,7 @@ def open_modal(root, scroller, row_id, due_date):
     modal_scroll_canvas.grid_columnconfigure(0, weight=1)
     
     # Text widget that expands with the window
-    modal_text = tk.Text(modal_scroll_frame, height=12, width=35, font=("Arial", 16))
+    modal_text = tk.Text(modal_scroll_frame, height=12, width=35, font=("Arial", 16), wrap="word")
     modal_text.grid(row=0, column=0, columnspan=3, padx=15, pady=15, sticky="nsew")
     modal.grid_rowconfigure(0, weight=1)
     modal.grid_columnconfigure(0, weight=1)
@@ -179,7 +212,7 @@ def open_modal(root, scroller, row_id, due_date):
         
     def on_close(details_text):
         if details_text == '':
-            print("On close")
+            # print("On close")
             # Call the delete_record method to remove the blank record
             delete_entry(row_id, root, scroller, modal)
             modal.destroy()
@@ -212,7 +245,7 @@ def date_label_colour(due_date_str):
         return "#43aa8b"
     
 def create_new_record(root, scroller):
-    print("create new")
+    # print("create new")
     modal_text=''
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -221,7 +254,7 @@ def create_new_record(root, scroller):
     cursor.execute('INSERT INTO tasks (detail, creation_date, complete, due_date) VALUES (?, ?, ?, ?)', (modal_text, creation_date, 0, due_date))
     conn.commit()
     new_task_id = cursor.lastrowid
-    print(f"last row: {new_task_id}")
+    # print(f"last row: {new_task_id}")
     conn.close()
     open_modal(root, scroller, new_task_id, due_date)
     
@@ -236,20 +269,20 @@ def delete_entry(row_id, root, scroller, modal, sort_order=None):
     modal.destroy()
     
 def hide_complete(root, scroller):
-    print("hide complete called")
+    # print("hide complete called")
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     query = "SELECT * FROM tasks WHERE complete = 1 ORDER BY creation_date ASC"
     cursor.execute(query)
-    print("query processed")
+    # print("query processed")
     renderlist.render_list(root, scroller, cursor)
     conn.close()
 
 
 def toggle_fill(event, lbl, style, row_id):
     """Toggle the fill of the label to indicate done and update the DB."""
-    print("toggle fill clicked")
-    print(f"row_id: {row_id}")
+    # print("toggle fill clicked")
+    # print(f"row_id: {row_id}")
     
     # Toggle the style of the label
     if lbl.cget("text") == "":
@@ -294,15 +327,15 @@ def sort_list(root, scroller):
     # print(f"sort called with: {sort_order}")
     if current_state == "standard":
         current_state = sort_state.sort_order_toggle(1)
-        print(f" (IF) sort order changed to: {current_state}")
+        # print(f" (IF) sort order changed to: {current_state}")
     elif current_state == "due_date":
         current_state = sort_state.sort_order_toggle(1)
-        print(f"(ELIF) sort order changed to: {current_state}")
+        # print(f"(ELIF) sort order changed to: {current_state}")
     
     # Call render_list with updated sort_order
     renderlist.render_list(root, scroller)  
         
 
 def refresh_list(root, scroller):
-    print(f"REFRESH called with {sort_state.sort_order_toggle(0)}")
+    # print(f"REFRESH called with {sort_state.sort_order_toggle(0)}")
     renderlist.render_list(root, scroller)
