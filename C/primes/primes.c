@@ -3,7 +3,7 @@
 
 int main(void) {
 
-    long max = 100000000; // check up to
+    long max = 891; // check up to
     int divisor_count = 2; // every number after 1 must inherently be divisible by itself and 1
     long numbers_found = 0; // counter for number of primes found
     long upper_bound = 0;

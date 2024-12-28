@@ -1,3 +1,7 @@
+"""Layout.py
+   Deasl with the alyout of widgets in the main tk root window"""
+
+
 import tkinter as tk
 from tkinter import ttk
 import renderlist, os, sys
@@ -6,19 +10,21 @@ import helpers
 windll.shcore.SetProcessDpiAwareness(1)
 
 
-root = tk.Tk()
-root.tk.call('tk', 'scaling', 1)
-root.resizable(True, True)
-root.geometry("681x950")
-root.minsize(681, 950)
-root.grid_columnconfigure(0, weight=1)
+root = tk.Tk() # root app window
+root.tk.call('tk', 'scaling', 1) # set scaling for current resolution
+root.resizable(True, True) # re-sizeable on x and y axis
 
+root.geometry("681x950") # window size 
+root.minsize(681, 950)
+root.grid_columnconfigure(0, weight=1) # one master column for the app. Everything site within this
+
+# fucntion to get paths for cross-platform compatibility 
 def get_resource_path(relative_path):
     """Get the absolute path to a resource, works for PyInstaller."""
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
 
-
+# global dict to hold the sort order
 sort_order_dict = {"sort_order": "standard"}
 
 style = ttk.Style()
@@ -40,7 +46,7 @@ small_style.configure("SmallButton.TButton",
 
 
 
-sort_order = "standard"
+# sort_order = "standard"
 
 heading = ttk.Label(root, text="QuickTask (QT)", font=('Arial', 36, "bold"))
 heading.grid(row=0, pady=(20, 0))

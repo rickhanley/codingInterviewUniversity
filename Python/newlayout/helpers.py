@@ -9,7 +9,7 @@ import sort_state
 import os, shutil, sys
 from pathlib import Path
 
-Calendar
+
 
 def get_database_path():
     """Determine the correct database path based on the environment."""
@@ -126,9 +126,7 @@ def existing_entry_update(modal_text, root, scroller, row_id, modal):
     # need to address due_date but for now will be left unchanged
     cursor.execute('UPDATE tasks SET detail = ? WHERE id = ?', (modal_text, row_id))
     conn.commit()
-    
     conn.close()
-    
     modal.destroy()
     renderlist.render_list(root, scroller)
 
@@ -146,7 +144,13 @@ def existing_entry_update(modal_text, root, scroller, row_id, modal):
 #     renderlist.render_list(root, scroller)
 
 def open_modal(root, scroller, row_id, due_date):
+    """ open modal creates a modal text input window to accept
+        data from the user that will be saved into the databse.
+        it includes the buttons and date picker required to 
+        make the modal functional"""
     
+    # if there is a row_id number get the text from the DB
+    # if not, it must be a new record so set the text as 
     if row_id is not None:
         details_text = get_row_text(row_id)
     else:
@@ -158,8 +162,12 @@ def open_modal(root, scroller, row_id, due_date):
     modal = tk.Toplevel(root)
     modal.title("Task Detail")
     modal.geometry("500x400")
+    # bind events to add Ctrl-S for save and Escape key presses ot close down the modal
+    modal.bind("<Control-s>", lambda event: existing_entry_update(modal_text.get('1.0', 'end').strip(), root, scroller, row_id, modal))
+    modal.bind("<Escape>", lambda event: on_close(details_text))
+    modal.focus_set()
     
-    # Make the modal window expandable
+  
     modal.grid_rowconfigure(0, weight=1)
     modal.grid_columnconfigure(0, weight=1)
     modal.grid_columnconfigure(1, weight=1)
@@ -245,7 +253,7 @@ def date_label_colour(due_date_str):
         return "#43aa8b"
     
 def create_new_record(root, scroller):
-    # print("create new")
+    print("create new")
     modal_text=''
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
