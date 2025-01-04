@@ -273,18 +273,26 @@ def delete_entry(row_id, root, scroller, modal, sort_order=None):
     cursor.execute(query, (row_id,))
     conn.commit()
     conn.close()
-    refresh_list(root,scroller)
+    # refresh_list(root,scroller)
     modal.destroy()
     
-def hide_complete(root, scroller):
-    # print("hide complete called")
+def hide_complete(root, scroller, hide_state_dict = 1):
+    print(f"{hide_state_dict}")
+    # print(f"hide complete called. show is: {show}")
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    query = "SELECT * FROM tasks WHERE complete = 1 ORDER BY creation_date ASC"
+    if(hide_state_dict["hide_state"] == 1):
+        query = "SELECT * FROM tasks WHERE complete = 1 ORDER BY creation_date ASC"
+        hide_state_dict["hide_state"] = 0
+    else:
+        query = "SELECT * FROM tasks WHERE complete = 0 ORDER BY creation_date ASC"
+        hide_state_dict["hide_state"] = 1
     cursor.execute(query)
+    
     # print("query processed")
     renderlist.render_list(root, scroller, cursor)
     conn.close()
+    
 
 
 def toggle_fill(event, lbl, style, row_id):
@@ -331,6 +339,7 @@ def toggle_fill(event, lbl, style, row_id):
         conn.close()
         
 def sort_list(root, scroller):
+    print("Sort called")
     current_state = sort_state.sort_order_toggle(0)
     # print(f"sort called with: {sort_order}")
     if current_state == "standard":

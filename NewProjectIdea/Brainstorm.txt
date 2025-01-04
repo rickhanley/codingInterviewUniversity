@@ -1,0 +1,22 @@
+What problems can I identify?
+    Shopping
+        Time consuming
+        difficult to know exactly what you have in already
+        The need to copy ingredients lists into website is a chore
+
+
+Shopping app
+
+What would make it useful?
+    The ability to enter meals from a database of online recipes
+    Have it collate the ingredients and check for duplicates / waste
+    Know what you have in already and remaining quantities
+
+Project management app
+
+What would make it useful?
+    The process is opaque - the app needs to know what needs to happen and when by
+    It can provide prompts and due database
+    It can give ready access to key documents rather that using network drives
+    
+

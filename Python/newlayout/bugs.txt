@@ -1,0 +1,11 @@
+if you click complete and then hit the filter button
+the list that is rendered is  on the first click. If you
+toggle twice more, they appear. When the Toggle button is clicked
+it needs to commit to the database and then pull the latest data.
+
+The filter button seesm to be doing a refresh on the intial click
+
+filter_type_toggle in sort state could be useful for resolving
+the issues about the views and what should be the current view for renderlist
+Renderlist is called a lot and defaults back to non complete tasks which isn't always 
+needed

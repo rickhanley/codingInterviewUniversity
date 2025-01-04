@@ -1,0 +1,38 @@
+Function arguments 
+
+pool = list of days (as numbers 0 through 4)
+r = how many value required in returned combo 
+start = given a default of 0 as it always needs to start there 
+current_combination=[] = default value for the list to be returned
+
+if len(current_combination) == r:
+        yield tuple(current_combination)
+        return
+
+this says if current_combination's length is 3 yield a tuple of
+the current_combination. 
+
+The function returns after that immediately bringing an end to that iterations
+
+
+The for loop is saying for i in the range of of start(0) to len(pool) 5 
+    ie. 0 through 4
+
+    append pool[i] to current current_combination
+    so on first iteration it will add 
+        
+        0
+        
+        THEN - recursive call starts new branch:
+
+        yield from combinations_recursive(pool, r, i + 1, current_combination)
+
+            pool and r are the same and just passed in 
+            i+1 and current_combination are changed however
+
+            the 1st recursive call gets  
+            combinations_recursive(pool, r, start=1, current_combination=[0])
+
+            the if statement is still not true 
+
+            so the loop now is i in range of 1 to 4

@@ -26,6 +26,7 @@ def get_resource_path(relative_path):
 
 # global dict to hold the sort order
 sort_order_dict = {"sort_order": "standard"}
+hide_state_dict = {"hide_state": 1}
 
 style = ttk.Style()
 small_style = ttk.Style()
@@ -61,7 +62,7 @@ plus_btn.grid(row=0, column=0, padx=15, pady=15, sticky="ew")
 
 funnel_gif = tk.PhotoImage(file=get_resource_path("buttons/funnel.png"))
 funnel_btn = ttk.Button(button_frame, image=funnel_gif, style="RoundedButton.TButton",
-                        command=lambda: helpers.hide_complete(root, scroller))
+                        command=lambda: helpers.hide_complete(root, scroller, hide_state_dict))
 funnel_btn.grid(row=0, column=1, padx=15, pady=15, sticky="ew")
 
 sort_gif = tk.PhotoImage(file=get_resource_path("buttons/arrows-down-up.png"))
