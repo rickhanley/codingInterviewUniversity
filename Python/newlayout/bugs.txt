@@ -9,3 +9,6 @@ filter_type_toggle in sort state could be useful for resolving
 the issues about the views and what should be the current view for renderlist
 Renderlist is called a lot and defaults back to non complete tasks which isn't always 
 needed
+
+When the new record is created, the top corner red x doesn't work correctly nor
+does the save button - 
