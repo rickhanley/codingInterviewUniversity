@@ -27,6 +27,7 @@ def get_resource_path(relative_path):
 # global dict to hold the sort order
 sort_order_dict = {"sort_order": "standard"}
 hide_state_dict = {"hide_state": 1}
+print(f"From layout: {hide_state_dict} TYPE: {type(hide_state_dict)}")
 
 style = ttk.Style()
 small_style = ttk.Style()
@@ -67,12 +68,12 @@ funnel_btn.grid(row=0, column=1, padx=15, pady=15, sticky="ew")
 
 sort_gif = tk.PhotoImage(file=get_resource_path("buttons/arrows-down-up.png"))
 sort_btn = ttk.Button(button_frame, image=sort_gif, style="RoundedButton.TButton",
-                      command=lambda: helpers.sort_list(root, scroller))
+                      command=lambda: helpers.sort_list(root, scroller, hide_state_dict))
 sort_btn.grid(row=0, column=2, padx=15, pady=15, sticky="ew")
 
 refresh_gif = tk.PhotoImage(file=get_resource_path("buttons/arrows-clockwise.png"))
 refresh_btn = ttk.Button(button_frame, image=refresh_gif, style="RoundedButton.TButton",
-                         command=lambda: helpers.refresh_list(root, scroller))
+                         command=lambda: helpers.refresh_list(root, scroller, hide_state_dict))
 refresh_btn.grid(row=0, column=3, padx=15, pady=15, sticky="ew")
 
 button_frame.grid_columnconfigure(0, weight=1)

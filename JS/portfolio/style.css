@@ -1,0 +1,12 @@
+.text-container {
+    perspective: 1000px; /* Adjust for depth */
+}
+
+.depth-text {
+    font-size: 5rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    transform: rotateX(-15deg) rotateY(15deg) translateZ(-100px); /* Create 3D effect */
+    transform-style: preserve-3d;
+}

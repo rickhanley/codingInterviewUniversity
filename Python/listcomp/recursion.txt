@@ -23,7 +23,52 @@ The for loop is saying for i in the range of of start(0) to len(pool) 5
         
         0
         
-        THEN - recursive call starts new branch:
+        THEN - recursive call starts new branch with i + 1 and current_combination[0]:
+
+            if not true in this branch
+                loop starts i + 1, current_combination[0]
+                append happens current_combination[0, 1]
+                THEN - recursive call starts new branch with i + 1 and current_combination[0, 1]:
+                    if not true in this branch
+                    loop starts i + 1, current_combination[0, 1]
+                    append happens current_combination[0, 1, 2]
+                    THEN - recursive call starts new branch with i + 1 and current_combination[0, 1, 2]:
+                        if IS TRUE now (r == 3)
+                        current_combination is returned as a valid combo 
+
+                        ONLY NOW IS THE current_combination.pop() line run
+
+                        current_combination is now [0, 1] - loop goes back to top i is incremented
+                        current_combination is appended with i = 3 [0, 1, 3]
+
+                        if IS TRUE now (r == 3)
+                        current_combination is returned as a valid combo 
+
+                        ONLY NOW IS THE current_combination.pop() line run
+                        current_combination is now [0, 1] - loop goes back to top i is incremented
+                        current_combination is appended with i = 4 [0, 1, 4]
+                        loop exits as len(pool) condition now met (== 4)
+
+                        if IS TRUE now (r == 3)
+                        current_combination is returned as a valid combo
+
+call 1
+start = 0 current_combination[]
+    call 2
+    start = 1 current_combination[0]
+        call 3
+        start = 2 current_combination[0, 1]
+            call 4
+            start = 3 current_combination[0,1,2]
+                call 5 r ==3 so yields [0,1,2]
+                return happens back to call 3 WITH [0,1,2]
+                pop now occurs so we get [0,1]
+
+
+
+
+
+
 
         yield from combinations_recursive(pool, r, i + 1, current_combination)
 

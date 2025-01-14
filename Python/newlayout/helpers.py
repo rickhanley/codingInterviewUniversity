@@ -5,11 +5,10 @@ import sqlite3
 import renderlist
 # from tkinter import *
 from tkcalendar import Calendar
-import sort_state
+from sort_state import sort_order_toggle
+from sort_state import sort_order_dict
 import os, shutil, sys
 from pathlib import Path
-
-
 
 def get_database_path():
     """Determine the correct database path based on the environment."""
@@ -62,11 +61,24 @@ def todays_date_formatted(today_unformatted):
 
 def date_picker(parent_modal, date_label, row_id):
     # Create a new Toplevel window for the date picker
+    
     print(f"CGET: {date_label.cget("text")}")
+    
+    
+    
     date_modal = tk.Toplevel(parent_modal)
     date_modal.title("Select Date")
     date_modal.geometry("420x380")  # Adjust the size as needed
-    
+    root_x = parent_modal.winfo_x()
+    root_y = parent_modal.winfo_y()
+    root_width = parent_modal.winfo_width()
+    root_height = parent_modal.winfo_height()
+    modal_width = 415
+    modal_height = 400
+    position_right = root_x + 300
+    position_down = root_y + -150
+
+    date_modal.geometry(f"{modal_width}x{modal_height}+{position_right}+{position_down}")
 
     # Make the date picker modal (blocks interaction with parent_modal until closed)
     date_modal.transient(parent_modal)
@@ -145,90 +157,74 @@ def existing_entry_update(modal_text, root, scroller, row_id, modal):
 
 def open_modal(root, scroller, row_id, due_date):
     """ open modal creates a modal text input window to accept
-        data from the user that will be saved into the databse.
-        it includes the buttons and date picker required to 
-        make the modal functional"""
+        data from the user that will be saved into the database.
+        It includes the buttons and date picker required to
+        make the modal functional."""
     
-    # if there is a row_id number get the text from the DB
-    # if not, it must be a new record so set the text as 
-    if row_id is not None:
-        details_text = get_row_text(row_id)
-    else:
-        details_text = ""
-    
-    # print(f"Row ID: {row_id}")
-    """Function to show the modal window to accept task-specific data."""
-    
+    # Get existing text or initialize an empty string
+    details_text = get_row_text(row_id) if row_id is not None else ""
+
+    # Create the modal window
     modal = tk.Toplevel(root)
     modal.title("Task Detail")
     modal.geometry("500x400")
-    # bind events to add Ctrl-S for save and Escape key presses ot close down the modal
-    modal.bind("<Control-s>", lambda event: existing_entry_update(modal_text.get('1.0', 'end').strip(), root, scroller, row_id, modal))
+
+    # Position modal relative to the main window
+    root_x = root.winfo_x()
+    root_y = root.winfo_y()
+    root_width = root.winfo_width()
+    root_height = root.winfo_height()
+    modal_width = 500
+    modal_height = 400
+
+    position_right = root_x + (root_width // 2) - (modal_width // 2)
+    position_down = root_y + (root_height // 2) - (modal_height // 2)
+
+    modal.geometry(f"{modal_width}x{modal_height}+{position_right}+{position_down}")
+
+    # Bind events
+    modal.bind("<Control-s>", lambda event: existing_entry_update(
+        modal_text.get('1.0', 'end').strip(), root, scroller, row_id, modal))
     modal.bind("<Escape>", lambda event: on_close(details_text))
     modal.focus_set()
-    
-  
+
+    # Configure grid
     modal.grid_rowconfigure(0, weight=1)
-    modal.grid_columnconfigure(0, weight=1)
-    modal.grid_columnconfigure(1, weight=1)
-    modal.grid_columnconfigure(2, weight=1)  # Ensure the third column is weight-adjustable
-    
-    # Canvas for potential scrolling (currently not used for scrolling)
-    modal_scroll_canvas = tk.Canvas(modal, borderwidth=2, relief="solid")
-    modal_scroll_canvas.grid(row=0, column=0, columnspan=3, sticky="nsew")  # Span across all 3 columns
-    
-    # Frame to contain the Text widget
-    modal_scroll_frame = tk.Frame(modal_scroll_canvas)
-    modal_scroll_frame.grid(sticky="nsew")
-    
-    # Make the frame expandable
-    modal_scroll_canvas.grid_rowconfigure(0, weight=1)
-    modal_scroll_canvas.grid_columnconfigure(0, weight=1)
-    
-    # Text widget that expands with the window
-    modal_text = tk.Text(modal_scroll_frame, height=12, width=35, font=("Arial", 16), wrap="word")
+    modal.grid_columnconfigure((0, 1, 2), weight=1)
+
+    # Create a text input area
+    modal_text = tk.Text(modal, height=12, width=35, font=("Roboto", 16), wrap="word")
     modal_text.grid(row=0, column=0, columnspan=3, padx=15, pady=15, sticky="nsew")
-    modal.grid_rowconfigure(0, weight=1)
-    modal.grid_columnconfigure(0, weight=1)
-    modal.grid_columnconfigure(1, weight=1)
-    modal.grid_columnconfigure(2, weight=1)  # Add weight for column 2 as well
-    
-    scrollbar = tk.Scrollbar(modal_scroll_frame, command=modal_text.yview)
-    scrollbar.grid(sticky="ns", column=1, row=0)
-    
-    # Link the scrollbar to the Text widget
+    scrollbar = tk.Scrollbar(modal, command=modal_text.yview)
+    scrollbar.grid(row=0, column=3, sticky="ns")
     modal_text.config(yscrollcommand=scrollbar.set)
-    
-    if details_text:  # Ensure there is content to insert
+
+    if details_text:
         modal_text.insert("1.0", details_text)
         modal_text.mark_set("insert", "end")
-        modal_text.focus_set()  
+        modal_text.focus_set()
         modal_text.see("insert")
-    
-    # Make the Text widget's frame expandable
-    modal_scroll_frame.grid_rowconfigure(0, weight=1)
-    modal_scroll_frame.grid_columnconfigure(0, weight=1)
-    
-    # Save button
-    save_btn = tk.Button(modal, text="Save", font=("Arial", 20), command= lambda: existing_entry_update(modal_text.get('1.0', 'end').strip(), root, scroller, row_id, modal), padx=15, pady=15)
-    save_btn.grid(row=1, column=0, padx=30, pady=30)
-    date_label = tk.Button(modal, text=f"{date_for_display(due_date)}", font=("Arial", 20), command= lambda: date_picker(modal, date_label, row_id), padx=15, pady=15)
-    date_label.grid(row=1, column=1, padx=30, pady=30)
-    delete_button = tk.Button(modal, text="Delete", font=("Arial", 20), command= lambda: delete_entry(row_id, root, scroller, modal, "standard"), padx=15, pady=15)
-    delete_button.grid(row=1, column=2, padx=30, pady=30)
-        
-        
+
+    # Add buttons
+    save_btn = tk.Button(modal, text="Save", font=("Arial", 16), command=lambda: existing_entry_update(
+        modal_text.get('1.0', 'end').strip(), root, scroller, row_id, modal), padx=15, pady=15)
+    save_btn.grid(row=1, column=0, padx=20, pady=20)
+
+    date_label = tk.Button(modal, text=f"{date_for_display(due_date)}", font=("Arial", 16), command=lambda: date_picker(modal, date_label, row_id), padx=15, pady=15)
+    date_label.grid(row=1, column=1, padx=20, pady=20)
+
+    delete_button = tk.Button(modal, text="Delete", font=("Arial", 16), command=lambda: delete_entry(row_id, root, scroller, modal, sort_order_dict, "standard"), padx=15, pady=15)
+    delete_button.grid(row=1, column=2, padx=20, pady=20)
+
+    # On close handling
     def on_close(details_text):
         if details_text == '':
-            # print("On close")
-            # Call the delete_record method to remove the blank record
             delete_entry(row_id, root, scroller, modal)
-            modal.destroy()
-        else:
-            modal.destroy()
+        modal.destroy()
+
     modal.protocol("WM_DELETE_WINDOW", lambda: on_close(details_text))
-    # Make the modal window modal
     modal.grab_set()
+
 
     
 def date_label_colour(due_date_str):
@@ -266,17 +262,17 @@ def create_new_record(root, scroller):
     conn.close()
     open_modal(root, scroller, new_task_id, due_date)
     
-def delete_entry(row_id, root, scroller, modal, sort_order=None):
+def delete_entry(row_id, root, scroller, modal, hide_state_dict, sort_order=None):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     query = "DELETE FROM tasks WHERE id = ?"
     cursor.execute(query, (row_id,))
     conn.commit()
     conn.close()
-    # refresh_list(root,scroller)
     modal.destroy()
+    refresh_list(root,scroller, hide_state_dict)
     
-def hide_complete(root, scroller, hide_state_dict = 1):
+def hide_complete(root, scroller, hide_state_dict):
     print(f"{hide_state_dict}")
     # print(f"hide complete called. show is: {show}")
     conn = sqlite3.connect(db_path)
@@ -284,9 +280,11 @@ def hide_complete(root, scroller, hide_state_dict = 1):
     if(hide_state_dict["hide_state"] == 1):
         query = "SELECT * FROM tasks WHERE complete = 1 ORDER BY creation_date ASC"
         hide_state_dict["hide_state"] = 0
+        print(f"Hide complete if Contents: {hide_state_dict} TYPE: {type(hide_state_dict)}")
     else:
         query = "SELECT * FROM tasks WHERE complete = 0 ORDER BY creation_date ASC"
         hide_state_dict["hide_state"] = 1
+        print(f"Hide complete else : {hide_state_dict} TYPE: {type(hide_state_dict)}")
     cursor.execute(query)
     
     # print("query processed")
@@ -338,21 +336,32 @@ def toggle_fill(event, lbl, style, row_id):
         # Always close the connection
         conn.close()
         
-def sort_list(root, scroller):
+def sort_list(root, scroller, hide_state_dict):
     print("Sort called")
-    current_state = sort_state.sort_order_toggle(0)
+    hide_state_dict["hide_state"] = 1
+    print(f"Sort list: {hide_state_dict} TYPE: {type(hide_state_dict)}")
+    current_state = sort_order_toggle(0)
+    print(f"current_state: {current_state}")
     # print(f"sort called with: {sort_order}")
     if current_state == "standard":
-        current_state = sort_state.sort_order_toggle(1)
+        current_state = sort_order_toggle(1)
         # print(f" (IF) sort order changed to: {current_state}")
     elif current_state == "due_date":
-        current_state = sort_state.sort_order_toggle(1)
+        current_state = sort_order_toggle(1)
         # print(f"(ELIF) sort order changed to: {current_state}")
     
     # Call render_list with updated sort_order
-    renderlist.render_list(root, scroller)  
+    renderlist.render_list(root, scroller)
+    
+ 
         
 
-def refresh_list(root, scroller):
+def refresh_list(root, scroller, hide_state_dict):
+    print(f"Top of refresh list: {hide_state_dict} TYPE: {type(hide_state_dict)}")
     # print(f"REFRESH called with {sort_state.sort_order_toggle(0)}")
     renderlist.render_list(root, scroller)
+    print(f"Contents: {hide_state_dict} TYPE: {type(hide_state_dict)}")
+    hide_state_dict["hide_state"] = 0
+    sort_order_dict["sort_order"] = 'standard'
+    hide_complete(root, scroller, hide_state_dict)
+    

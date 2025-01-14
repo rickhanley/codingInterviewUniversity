@@ -1,0 +1,8 @@
+ 1st call
+ loop 
+    [0] call with [0]
+    [0,1] call with [0,1]
+    [0,1,2] call with [0,1,2] 
+    pop happens now [0,1]
+    r ==3 [0,1,2] yielded tuple and return happens
+

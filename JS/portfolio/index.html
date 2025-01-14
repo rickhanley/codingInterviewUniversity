@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Extruded Text</title>
+  <style>
+    body {
+      margin: 0;
+      background: #1e1e1e;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    svg {
+      overflow: visible;
+    }
+  </style>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+    <!-- Group for extrusion layers -->
+    <g transform="translate(200, 100)">
+      <!-- Extrusion depth layers -->
+      <g id="extrusion">
+        <!-- Add multiple layers to create a sense of depth -->
+        <!-- Use darker shades as layers go "deeper" -->
+        <text x="0" y="100" font-size="100" font-family="Arial" font-weight="bold" fill="#222" transform="translate(-10, -10)">My Portfolio</text>
+        <text x="0" y="100" font-size="100" font-family="Arial" font-weight="bold" fill="#333" transform="translate(-8, -8)">My Portfolio</text>
+        <text x="0" y="100" font-size="100" font-family="Arial" font-weight="bold" fill="#444" transform="translate(-6, -6)">My Portfolio</text>
+        <text x="0" y="100" font-size="100" font-family="Arial" font-weight="bold" fill="#555" transform="translate(-4, -4)">My Portfolio</text>
+        <text x="0" y="100" font-size="100" font-family="Arial" font-weight="bold" fill="#666" transform="translate(-2, -2)">My Portfolio</text>
+      </g>
+
+      <!-- Foreground text (light color for focus) -->
+      <text x="0" y="100" font-size="100" font-family="Arial" font-weight="bold" fill="#00ff00">
+        My Portfolio
+      </text>
+    </g>
+  </svg>
+</body>
+</html>

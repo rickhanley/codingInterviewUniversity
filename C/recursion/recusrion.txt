@@ -1,0 +1,5 @@
+fact(5) is called
+
+x != 1 (5)
+    therefore return 5 * fact(x - 1) // this goes on the stack
+        x != 1 (4)

@@ -41,7 +41,7 @@ def render_list(root, scroller, data_set=None):
         cursor = data_set
     tasks = cursor.fetchall()
     conn.close()
-    
+
     style = ttk.Style(root)
     style.configure("Default.TLabel", background="white", font=("Arial", 14), relief="groove", padding=(24, 15))
     style.configure("Toggled.TLabel", background="lightblue", font=("Arial", 14), relief="groove", padding=(24, 15))

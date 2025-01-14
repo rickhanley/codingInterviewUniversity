@@ -1,1 +1,1 @@
-pyinstaller --onefile --windowed --add-data "data;data" --add-data "buttons;buttons" --name QuickTask layout.py
+pyinstaller --onefile --windowed --add-data "data;data" --add-data "buttons;buttons" --name QuickTask_1 layout.py
