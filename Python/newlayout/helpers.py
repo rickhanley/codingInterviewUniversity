@@ -9,7 +9,7 @@ from sort_state import sort_order_toggle
 from sort_state import sort_order_dict
 import os, shutil, sys
 from pathlib import Path
-
+renderlist
 def get_database_path():
     """Determine the correct database path based on the environment."""
     # Check if running as a PyInstaller bundle
@@ -127,10 +127,10 @@ def get_row_text(row_id):
     conn.close()
     return result[0] if result else None
 
-def existing_entry_update(modal_text, root, scroller, row_id, modal):
+def existing_entry_update(modal_text, root, scroller, row_id, modal, hide_state_dict):
     if not modal_text:
         # print("Text box empty - deleting")
-        delete_entry(row_id, root, scroller, modal)
+        delete_entry(row_id, root, scroller, modal, hide_state_dict)
     # print(f"Modal text print: {modal_text}")
     # print(f"Exisitng entry, ROW_ID: {row_id}")
     conn = sqlite3.connect(db_path)
@@ -140,7 +140,7 @@ def existing_entry_update(modal_text, root, scroller, row_id, modal):
     conn.commit()
     conn.close()
     modal.destroy()
-    renderlist.render_list(root, scroller)
+    renderlist.render_list(root, scroller, hide_state_dict)
 
 # def new_entry_save(modal_text, root, scroller, modal):
 #     print("New entry save")
@@ -155,7 +155,7 @@ def existing_entry_update(modal_text, root, scroller, row_id, modal):
 #     modal.destroy()
 #     renderlist.render_list(root, scroller)
 
-def open_modal(root, scroller, row_id, due_date):
+def open_modal(root, scroller, row_id, due_date, hide_state_dict):
     """ open modal creates a modal text input window to accept
         data from the user that will be saved into the database.
         It includes the buttons and date picker required to
@@ -185,7 +185,7 @@ def open_modal(root, scroller, row_id, due_date):
     # Bind events
     modal.bind("<Control-s>", lambda event: existing_entry_update(
         modal_text.get('1.0', 'end').strip(), root, scroller, row_id, modal))
-    modal.bind("<Escape>", lambda event: on_close(details_text))
+    modal.bind("<Escape>", lambda event: on_close(details_text, hide_state_dict))
     modal.focus_set()
 
     # Configure grid
@@ -207,7 +207,7 @@ def open_modal(root, scroller, row_id, due_date):
 
     # Add buttons
     save_btn = tk.Button(modal, text="Save", font=("Arial", 16), command=lambda: existing_entry_update(
-        modal_text.get('1.0', 'end').strip(), root, scroller, row_id, modal), padx=15, pady=15)
+        modal_text.get('1.0', 'end').strip(), root, scroller, row_id, modal, hide_state_dict), padx=15, pady=15)
     save_btn.grid(row=1, column=0, padx=20, pady=20)
 
     date_label = tk.Button(modal, text=f"{date_for_display(due_date)}", font=("Arial", 16), command=lambda: date_picker(modal, date_label, row_id), padx=15, pady=15)
@@ -217,12 +217,12 @@ def open_modal(root, scroller, row_id, due_date):
     delete_button.grid(row=1, column=2, padx=20, pady=20)
 
     # On close handling
-    def on_close(details_text):
+    def on_close(details_text, hide_state_dict):
         if details_text == '':
-            delete_entry(row_id, root, scroller, modal)
+            delete_entry(row_id, root, scroller, modal, hide_state_dict)
         modal.destroy()
 
-    modal.protocol("WM_DELETE_WINDOW", lambda: on_close(details_text))
+    modal.protocol("WM_DELETE_WINDOW", lambda: on_close(details_text, hide_state_dict))
     modal.grab_set()
 
 
@@ -248,7 +248,7 @@ def date_label_colour(due_date_str):
     else:  # Due in more than 3 days
         return "#43aa8b"
     
-def create_new_record(root, scroller):
+def create_new_record(root, scroller, hide_state_dict):
     print("create new")
     modal_text=''
     conn = sqlite3.connect(db_path)
@@ -260,7 +260,7 @@ def create_new_record(root, scroller):
     new_task_id = cursor.lastrowid
     # print(f"last row: {new_task_id}")
     conn.close()
-    open_modal(root, scroller, new_task_id, due_date)
+    open_modal(root, scroller, new_task_id, due_date, hide_state_dict)
     
 def delete_entry(row_id, root, scroller, modal, hide_state_dict, sort_order=None):
     conn = sqlite3.connect(db_path)
@@ -288,7 +288,7 @@ def hide_complete(root, scroller, hide_state_dict):
     cursor.execute(query)
     
     # print("query processed")
-    renderlist.render_list(root, scroller, cursor)
+    renderlist.render_list(root, scroller, hide_state_dict, cursor)
     conn.close()
     
 
@@ -351,15 +351,15 @@ def sort_list(root, scroller, hide_state_dict):
         # print(f"(ELIF) sort order changed to: {current_state}")
     
     # Call render_list with updated sort_order
-    renderlist.render_list(root, scroller)
+    renderlist.render_list(root, scroller, hide_state_dict)
     
- 
+
         
 
 def refresh_list(root, scroller, hide_state_dict):
     print(f"Top of refresh list: {hide_state_dict} TYPE: {type(hide_state_dict)}")
     # print(f"REFRESH called with {sort_state.sort_order_toggle(0)}")
-    renderlist.render_list(root, scroller)
+    renderlist.render_list(root, scroller, hide_state_dict)
     print(f"Contents: {hide_state_dict} TYPE: {type(hide_state_dict)}")
     hide_state_dict["hide_state"] = 0
     sort_order_dict["sort_order"] = 'standard'

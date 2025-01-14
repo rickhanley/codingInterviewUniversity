@@ -15,7 +15,7 @@ def update_wrap(event, label, padding_x):
     # Dynamically adjust wraplength based on label width and padding
     label.configure(wraplength=label.winfo_width() - padding_x * 2)
 
-def render_list(root, scroller, data_set=None):
+def render_list(root, scroller, hide_state_dict, data_set=None):
     option = 0
     current_state = sort_state.sort_order_toggle(0)
     # Clear any existing widgets
@@ -78,7 +78,7 @@ def render_list(root, scroller, data_set=None):
 
         # Bind the event to label2 for opening a modal
         def on_label2_click(event, task_id=row_id, due_date=due_date): 
-            helpers.open_modal(root, scroller, task_id, due_date)
+            helpers.open_modal(root, scroller, task_id, due_date, hide_state_dict)
         
         label2.bind("<Button-1>", on_label2_click)
 

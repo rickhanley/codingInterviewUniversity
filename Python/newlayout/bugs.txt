@@ -10,5 +10,5 @@ the issues about the views and what should be the current view for renderlist
 Renderlist is called a lot and defaults back to non complete tasks which isn't always 
 needed
 
-When the new record is created, the top corner red x doesn't work correctly nor
-does the save button - 
+When the new record is created, the top corner red x doesn't work correctly
+Save button is failing when save clicked with no text entered, should just close and not save a blank entry

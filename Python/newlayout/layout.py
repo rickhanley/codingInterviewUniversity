@@ -58,7 +58,7 @@ button_frame.grid(column=0, row=1, sticky="ew", padx=36, pady=10)
 
 plus_button_gif = tk.PhotoImage(file=get_resource_path("buttons/plus-square.png"))
 plus_btn = ttk.Button(button_frame, image=plus_button_gif, style="RoundedButton.TButton",
-                      command=lambda: helpers.create_new_record(root, scroller))
+                      command=lambda: helpers.create_new_record(root, scroller, hide_state_dict))
 plus_btn.grid(row=0, column=0, padx=15, pady=15, sticky="ew")
 
 funnel_gif = tk.PhotoImage(file=get_resource_path("buttons/funnel.png"))
@@ -138,6 +138,6 @@ scroller.grid_columnconfigure(0, minsize=30, weight=0)
 scroller.grid_columnconfigure(1, weight=10, minsize=402)
 scroller.grid_columnconfigure(2, weight=0, minsize=75)
 
-renderlist.render_list(root, scroller)
+renderlist.render_list(root, scroller, hide_state_dict)
 root.update_idletasks()
 root.mainloop()
