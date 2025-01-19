@@ -7,10 +7,11 @@ from tkinter import ttk
 import renderlist, os, sys
 from ctypes import windll
 import helpers
+import menu
+from root_conf import root
 windll.shcore.SetProcessDpiAwareness(1)
 
-
-root = tk.Tk() # root app window
+# root = tk.Tk() # root app window
 root.tk.call('tk', 'scaling', 1) # set scaling for current resolution
 root.resizable(True, True) # re-sizeable on x and y axis
 
@@ -31,6 +32,8 @@ print(f"From layout: {hide_state_dict} TYPE: {type(hide_state_dict)}")
 
 style = ttk.Style()
 small_style = ttk.Style()
+list_style = ttk.Style()
+
 
 # style.theme_use("clam")
 
@@ -38,7 +41,6 @@ style.configure("RoundedButton.TButton",
                 padding=(20,20),
                 relief="flat",
                 foreground="BLACK",
-                background="white",
                 font=("Arial", 20, "bold"))
 
 small_style.configure("SmallButton.TButton",
@@ -46,15 +48,34 @@ small_style.configure("SmallButton.TButton",
                 font=("Arial", 4),  # Smaller font for compact buttons, also controls button size
                 relief="flat")
 
+list_style.configure("ListButton.TButton",
+                     padding=(10,10)),
 
 
 # sort_order = "standard"
+top_level_frame = ttk.Frame(root, borderwidth=1)
+top_level_frame.grid(sticky="ew", )
 
-heading = ttk.Label(root, text="QuickTask (QT)", font=('Arial', 36, "bold"))
-heading.grid(row=0, pady=(20, 0))
+top_level_frame.grid_columnconfigure(0, weight=1)  # Make column 0 expand to take up extra space.
+top_level_frame.grid_columnconfigure(1, weight=0)  # Keep column 1 as is for the button.
+
+heading = ttk.Label(top_level_frame, text="QuickTask (QT)", font=('Arial', 36), padding=(50,0))
+heading.grid(row=0, sticky="w", pady=0)
+
+list_button_gif = tk.PhotoImage(file=get_resource_path("buttons/list.png")) # create gif
+list_button = ttk.Button(top_level_frame, image=list_button_gif, style="ListButton.TButton",
+                      command=lambda: menu.menu())
+list_button.grid(row=0, column=1, padx=52, pady=(15,0), sticky="e")
+
+status_frame = tk.Frame(root)
+status_frame.grid(sticky="ew", row=2)
+# status_label = ttk.Label(status_frame, text="Status:")
+status_label = ttk.Label(status_frame, text=f"Status: ", font=("Arial", 12, "bold"), borderwidth=1, relief="groove", padding=(5, 5))
+status_label.grid(row=0)
+
 
 button_frame = tk.Frame(root, borderwidth=1, height=10)
-button_frame.grid(column=0, row=1, sticky="ew", padx=36, pady=10)
+button_frame.grid(column=0, row=1, sticky="ew", padx=36)
 
 plus_button_gif = tk.PhotoImage(file=get_resource_path("buttons/plus-square.png"))
 plus_btn = ttk.Button(button_frame, image=plus_button_gif, style="RoundedButton.TButton",
@@ -80,7 +101,7 @@ button_frame.grid_columnconfigure(0, weight=1)
 
 label_frame = tk.Frame(root)
 # label_frame = tk.Frame(root, borderwidth=2, relief="solid")
-label_frame.grid(column=0, row=2, sticky="nsew", padx=(52, 55), pady=15)
+label_frame.grid(column=0, row=3, sticky="nsew", padx=(52, 55), pady=15)
 
 done_label = ttk.Label(label_frame, text=f"{u'\u2713'}", font=("Arial", 16, "bold"), borderwidth=1, relief="groove", padding=(15, 15))
 done_label.grid(row=0, column=0, sticky="ew")
@@ -95,8 +116,8 @@ label_frame.grid_columnconfigure(1, minsize=430, weight=1)   # Scalable task col
 
 # content_frame = tk.Frame(root, borderwidth=2, relief="solid")
 content_frame = tk.Frame(root)
-content_frame.grid(column=0, row=3, sticky="nsew", padx=20)
-root.grid_rowconfigure(3, weight=1)  # Allow content_frame to expand vertically
+content_frame.grid(column=0, row=4, sticky="nsew", padx=20)
+root.grid_rowconfigure(4, weight=1)  # Allow content_frame to expand vertically
 
 canvas = tk.Canvas(content_frame)
 

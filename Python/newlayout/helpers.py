@@ -9,7 +9,8 @@ from sort_state import sort_order_toggle
 from sort_state import sort_order_dict
 import os, shutil, sys
 from pathlib import Path
-renderlist
+
+
 def get_database_path():
     """Determine the correct database path based on the environment."""
     # Check if running as a PyInstaller bundle
@@ -29,15 +30,11 @@ def get_database_path():
         app_data_dir = Path.home() / ".quicktask"
         app_data_dir.mkdir(parents=True, exist_ok=True)
         writable_db_path = app_data_dir / "tasks.db"
-
         # If the database doesn't exist, copy it from the bundled directory
         if not writable_db_path.exists():
             shutil.copy(db_path, writable_db_path)
-
         return str(writable_db_path)
-
     return db_path
-
 db_path = get_database_path()
 
 def date_for_saving(date_string):
@@ -52,7 +49,6 @@ def date_for_display(date_string):
     date_for_display = date_object.strftime("%d/%m/%y")
     return date_for_display
 
-
 def todays_date_formatted(today_unformatted):
     # print(f"todays_date_formatted input is: {today_unformatted}")
     today_formatted = today_unformatted.strftime("%Y/%m/%d")
@@ -62,10 +58,7 @@ def todays_date_formatted(today_unformatted):
 def date_picker(parent_modal, date_label, row_id):
     # Create a new Toplevel window for the date picker
     
-    print(f"CGET: {date_label.cget("text")}")
-    
-    
-    
+    print(f"CGET: {date_label.cget("text")}")    
     date_modal = tk.Toplevel(parent_modal)
     date_modal.title("Select Date")
     date_modal.geometry("420x380")  # Adjust the size as needed
@@ -184,7 +177,7 @@ def open_modal(root, scroller, row_id, due_date, hide_state_dict):
 
     # Bind events
     modal.bind("<Control-s>", lambda event: existing_entry_update(
-        modal_text.get('1.0', 'end').strip(), root, scroller, row_id, modal))
+        modal_text.get('1.0', 'end').strip(), root, scroller, row_id, modal, hide_state_dict))
     modal.bind("<Escape>", lambda event: on_close(details_text, hide_state_dict))
     modal.focus_set()
 
@@ -291,8 +284,6 @@ def hide_complete(root, scroller, hide_state_dict):
     renderlist.render_list(root, scroller, hide_state_dict, cursor)
     conn.close()
     
-
-
 def toggle_fill(event, lbl, style, row_id):
     """Toggle the fill of the label to indicate done and update the DB."""
     # print("toggle fill clicked")
@@ -352,9 +343,6 @@ def sort_list(root, scroller, hide_state_dict):
     
     # Call render_list with updated sort_order
     renderlist.render_list(root, scroller, hide_state_dict)
-    
-
-        
 
 def refresh_list(root, scroller, hide_state_dict):
     print(f"Top of refresh list: {hide_state_dict} TYPE: {type(hide_state_dict)}")
@@ -364,4 +352,3 @@ def refresh_list(root, scroller, hide_state_dict):
     hide_state_dict["hide_state"] = 0
     sort_order_dict["sort_order"] = 'standard'
     hide_complete(root, scroller, hide_state_dict)
-    
