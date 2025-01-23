@@ -127,7 +127,7 @@ button_frame.grid_columnconfigure(0, weight=1)
 label_frame = tk.Frame(root)
 # label_frame.configure(bg="black")
 # label_frame = tk.Frame(root, borderwidth=2, relief="solid")
-label_frame.grid(column=0, row=3, sticky="nsew", padx=(52, 55), pady=15)
+label_frame.grid(column=0, row=3, sticky="nsew", padx=(52, 55), pady=(0, 15))
 
 done_label = ttk.Button(label_frame, text=f"{u'\u2713'}", width=3, padding=(12,15), state="disabled", style="LabelStyle.TButton")
 done_label.grid(row=0, column=0, sticky="w")
