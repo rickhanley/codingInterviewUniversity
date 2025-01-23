@@ -5,12 +5,16 @@ import helpers
 import sort_state
 import os
 from helpers import get_database_path
+import globals
 
 db_path = get_database_path()
 
 # test data for date fields
 row_id_map = {}
-
+# print(f"list length prior: {globals.task_count}")
+def list_length_updater(length):
+    globals.task_count = length
+    
 def update_wrap(event, label, padding_x):
     # Dynamically adjust wraplength based on label width and padding
     label.configure(wraplength=label.winfo_width() - padding_x * 2)
@@ -40,12 +44,16 @@ def render_list(root, scroller, hide_state_dict, data_set=None):
     elif data_set:
         cursor = data_set
     tasks = cursor.fetchall()
+    
+    list_length = len(tasks)
+    list_length_updater(list_length)
+    print(f"Length of taks list: {len(tasks)}")
+    print(f"Length of taks list: {globals.task_count}")
     conn.close()
 
     style = ttk.Style(root)
     style.configure("Default.TLabel", background="white", font=("Arial", 14), relief="groove", padding=(24, 15))
     style.configure("Toggled.TLabel", background="lightblue", font=("Arial", 14), relief="groove", padding=(24, 15))
-    
     
     for i, task in enumerate(tasks):
         

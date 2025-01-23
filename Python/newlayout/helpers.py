@@ -11,6 +11,9 @@ import os, shutil, sys
 from pathlib import Path
 
 
+def menu_save():
+    pass
+
 def get_database_path():
     """Determine the correct database path based on the environment."""
     # Check if running as a PyInstaller bundle
@@ -199,14 +202,14 @@ def open_modal(root, scroller, row_id, due_date, hide_state_dict):
         modal_text.see("insert")
 
     # Add buttons
-    save_btn = tk.Button(modal, text="Save", font=("Arial", 16), command=lambda: existing_entry_update(
-        modal_text.get('1.0', 'end').strip(), root, scroller, row_id, modal, hide_state_dict), padx=15, pady=15)
+    save_btn = ttk.Button(modal, text="Save", style="ListButton.TButton", command=lambda: existing_entry_update(
+        modal_text.get('1.0', 'end').strip(), root, scroller, row_id, modal, hide_state_dict))
     save_btn.grid(row=1, column=0, padx=20, pady=20)
 
-    date_label = tk.Button(modal, text=f"{date_for_display(due_date)}", font=("Arial", 16), command=lambda: date_picker(modal, date_label, row_id), padx=15, pady=15)
+    date_label = ttk.Button(modal, text=f"{date_for_display(due_date)}", style="ListButton.TButton", command=lambda: date_picker(modal, date_label, row_id))
     date_label.grid(row=1, column=1, padx=20, pady=20)
 
-    delete_button = tk.Button(modal, text="Delete", font=("Arial", 16), command=lambda: delete_entry(row_id, root, scroller, modal, sort_order_dict, "standard"), padx=15, pady=15)
+    delete_button = ttk.Button(modal, text="Delete", style="ListButton.TButton", command=lambda: delete_entry(row_id, root, scroller, modal, sort_order_dict, "standard"))
     delete_button.grid(row=1, column=2, padx=20, pady=20)
 
     # On close handling

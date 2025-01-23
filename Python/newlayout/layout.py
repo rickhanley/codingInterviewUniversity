@@ -1,7 +1,6 @@
 """Layout.py
-   Deasl with the alyout of widgets in the main tk root window"""
-
-
+   Deals with the layout of widgets in the main tk root window"""
+   
 import tkinter as tk
 from tkinter import ttk
 import renderlist, os, sys
@@ -9,7 +8,13 @@ from ctypes import windll
 import helpers
 import menu
 from root_conf import root
+import globals
 windll.shcore.SetProcessDpiAwareness(1)
+def list_length_getter():
+    return globals.task_count
+
+list_length = list_length_getter()
+print(f"List length: {list_length}")
 
 # root = tk.Tk() # root app window
 root.tk.call('tk', 'scaling', 1) # set scaling for current resolution
@@ -33,24 +38,44 @@ print(f"From layout: {hide_state_dict} TYPE: {type(hide_state_dict)}")
 style = ttk.Style()
 small_style = ttk.Style()
 list_style = ttk.Style()
-
-
-# style.theme_use("clam")
+label_style = ttk.Style()
 
 style.configure("RoundedButton.TButton",
                 padding=(20,20),
                 relief="flat",
-                foreground="BLACK",
-                font=("Arial", 20, "bold"))
+                borderwidth=0,
+                font=("Arial", 18, "bold"),
+                foreground="black",  # Text color
+)
 
 small_style.configure("SmallButton.TButton",
                 padding=(3, 22),  # Adjust padding for the desired this controls the button size in effect
-                font=("Arial", 4),  # Smaller font for compact buttons, also controls button size
+                font=("Arial", 12),  # Smaller font for compact buttons, also controls button size
                 relief="flat")
 
 list_style.configure("ListButton.TButton",
-                     padding=(10,10)),
+                     padding=(10,10),
+                     font=("Arial", 16)) 
 
+
+# Redefine the layout for "LabelStyle.TButton" to remove borders and highlights
+label_style.layout(
+    "LabelStyle.TButton",
+    [("Button.padding", {"sticky": "nswe", "children": [
+        ("Button.label", {"sticky": "nswe"})
+    ]})]
+)
+label_style.configure("LabelStyle.TButton",
+                      font=("Arial", 16, "bold"),
+                      padding=(5,5),
+                      background="#fdfdfd",
+                      foreground="black")
+
+label_style.map(
+    "LabelStyle.TButton",
+    foreground=[("active", "white")],
+    background=[("active", "#0056b3")]
+)
 
 # sort_order = "standard"
 top_level_frame = ttk.Frame(root, borderwidth=1)
@@ -67,12 +92,12 @@ list_button = ttk.Button(top_level_frame, image=list_button_gif, style="ListButt
                       command=lambda: menu.menu())
 list_button.grid(row=0, column=1, padx=52, pady=(15,0), sticky="e")
 
-status_frame = tk.Frame(root)
-status_frame.grid(sticky="ew", row=2)
+status_frame = tk.Frame(root, borderwidth=1, relief="solid")
+status_frame.grid(sticky="ew", row=5, padx=(55,55), pady=(5,15))
 # status_label = ttk.Label(status_frame, text="Status:")
-status_label = ttk.Label(status_frame, text=f"Status: ", font=("Arial", 12, "bold"), borderwidth=1, relief="groove", padding=(5, 5))
-status_label.grid(row=0)
+status_label = ttk.Label(status_frame, text=f"{list_length_getter()} ", font=("Arial", 12, "bold"), padding=(5, 5))
 
+status_label.grid(row=0)
 
 button_frame = tk.Frame(root, borderwidth=1, height=10)
 button_frame.grid(column=0, row=1, sticky="ew", padx=36)
@@ -100,19 +125,20 @@ refresh_btn.grid(row=0, column=3, padx=15, pady=15, sticky="ew")
 button_frame.grid_columnconfigure(0, weight=1)
 
 label_frame = tk.Frame(root)
+# label_frame.configure(bg="black")
 # label_frame = tk.Frame(root, borderwidth=2, relief="solid")
 label_frame.grid(column=0, row=3, sticky="nsew", padx=(52, 55), pady=15)
 
-done_label = ttk.Label(label_frame, text=f"{u'\u2713'}", font=("Arial", 16, "bold"), borderwidth=1, relief="groove", padding=(15, 15))
-done_label.grid(row=0, column=0, sticky="ew")
-description_label = ttk.Label(label_frame, text="Task", font=("Arial", 16, "bold"), borderwidth=1, relief="groove", padding=(15, 15), anchor="center")
-description_label.grid(row=0, column=1, padx=15, sticky="ew")
-due_by_label = ttk.Label(label_frame, text="Due By", font=("Arial", 16, "bold"), borderwidth=1, relief="groove", padding=(15, 15))
-due_by_label.grid(row=0, column=2, sticky="ew")
+done_label = ttk.Button(label_frame, text=f"{u'\u2713'}", width=3, padding=(12,15), state="disabled", style="LabelStyle.TButton")
+done_label.grid(row=0, column=0, sticky="w")
+description_label = ttk.Button(label_frame, text="Task", state="disabled", style="LabelStyle.TButton", padding=(1, 15))
+description_label.grid(row=0, column=1, padx=(15,14), sticky="ew")
+due_by_label = ttk.Button(label_frame, text="Due", state="disabled", style="LabelStyle.TButton", padding=(23, 15), width=5)
+due_by_label.grid(row=0, column=2, sticky="e")
 
-# label_frame.grid_columnconfigure(0, minsize=30)  # Fixed width for checkmark column
-label_frame.grid_columnconfigure(1, minsize=430, weight=1)   # Scalable task column
-# label_frame.grid_columnconfigure(2, weight=0, minsize=65)
+label_frame.grid_columnconfigure(0, minsize=30)  # Fixed width for checkmark column
+label_frame.grid_columnconfigure(1, minsize=420, weight=1)   # Scalable task column
+label_frame.grid_columnconfigure(2, weight=0, minsize=65)
 
 # content_frame = tk.Frame(root, borderwidth=2, relief="solid")
 content_frame = tk.Frame(root)
@@ -155,8 +181,8 @@ canvas.bind("<Configure>", lambda event: canvas.itemconfig(scrollable_window, wi
 scroller.bind("<Configure>", configure_scroll_region)  # Update scrollregion whenever scroller's size changes
 canvas.update_idletasks()
 # Configure columns in the scroller (for content layout inside the scroller)
-scroller.grid_columnconfigure(0, minsize=30, weight=0)
-scroller.grid_columnconfigure(1, weight=10, minsize=402)
+scroller.grid_columnconfigure(0, minsize=10, weight=0)
+scroller.grid_columnconfigure(1, weight=1, minsize=402)
 scroller.grid_columnconfigure(2, weight=0, minsize=75)
 
 renderlist.render_list(root, scroller, hide_state_dict)
