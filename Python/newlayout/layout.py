@@ -20,7 +20,7 @@ print(f"List length: {list_length}")
 root.tk.call('tk', 'scaling', 1) # set scaling for current resolution
 root.resizable(True, True) # re-sizeable on x and y axis
 
-root.geometry("681x950") # window size 
+root.geometry(f"681x950+0+0") # window size 
 root.minsize(681, 950)
 root.grid_columnconfigure(0, weight=1) # one master column for the app. Everything site within this
 
@@ -43,9 +43,11 @@ label_style = ttk.Style()
 style.configure("RoundedButton.TButton",
                 padding=(20,20),
                 relief="flat",
-                borderwidth=0,
+                borderwidth=1,
                 font=("Arial", 18, "bold"),
                 foreground="black",  # Text color
+                background="#ccf0f0"
+
 )
 
 small_style.configure("SmallButton.TButton",
@@ -55,7 +57,7 @@ small_style.configure("SmallButton.TButton",
 
 list_style.configure("ListButton.TButton",
                      padding=(10,10),
-                     font=("Arial", 16)) 
+                     font=("Arial", 14)) 
 
 
 # Redefine the layout for "LabelStyle.TButton" to remove borders and highlights
@@ -68,13 +70,24 @@ label_style.layout(
 label_style.configure("LabelStyle.TButton",
                       font=("Arial", 16, "bold"),
                       padding=(5,5),
-                      background="#fdfdfd",
-                      foreground="black")
+                                    )
 
 label_style.map(
     "LabelStyle.TButton",
+    foreground=[("disabled", "black")],
+    background=[("disabled", "#cccccc")]
+)
+style.layout(
+    "RoundedButton.TButton",
+    [("Button.padding", {"sticky": "nswe", "children": [
+        ("Button.label", {"sticky": "nswe"})
+    ]})]
+)
+
+style.map(
+    "RoundedButton.TButton",
     foreground=[("active", "white")],
-    background=[("active", "#0056b3")]
+    background=[("!active", "#ffffff"), ("active", "#e0f7ff")]
 )
 
 # sort_order = "standard"
@@ -129,7 +142,7 @@ label_frame = tk.Frame(root)
 # label_frame = tk.Frame(root, borderwidth=2, relief="solid")
 label_frame.grid(column=0, row=3, sticky="nsew", padx=(52, 55), pady=(0, 15))
 
-done_label = ttk.Button(label_frame, text=f"{u'\u2713'}", width=3, padding=(12,15), state="disabled", style="LabelStyle.TButton")
+done_label = ttk.Button(label_frame, text=f"{u'\u2713'}", width=3, padding=(13,15), state="disabled", style="LabelStyle.TButton")
 done_label.grid(row=0, column=0, sticky="w")
 description_label = ttk.Button(label_frame, text="Task", state="disabled", style="LabelStyle.TButton", padding=(1, 15))
 description_label.grid(row=0, column=1, padx=(15,14), sticky="ew")

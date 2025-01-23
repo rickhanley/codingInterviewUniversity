@@ -63,10 +63,10 @@ def render_list(root, scroller, hide_state_dict, data_set=None):
         # print(f"Placing task {i} at row {i}: {detail}, {due_date}")
         # completed_lbl = ttk.Label(scroller, text="", font=("Arial", 12, "bold"), borderwidth=1, relief="groove", padding=(15, 15))
         if complete:
-            completed_lbl = ttk.Label(scroller, text=f"\u2714", font=("Arial", 14), borderwidth=1, relief="groove", padding=(17, 15), style="Default.TLabel")
+            completed_lbl = ttk.Button(scroller, text=f"\u2714", padding=(20, 15), style="ListButton.TButton", width=1)
         else:
-            completed_lbl = ttk.Label(scroller, text=f"", font=("Arial", 14), borderwidth=1, relief="groove", padding=(24, 15), style="Default.TLabel")
-        completed_lbl.grid(row=i, column=0, padx=(15,15), sticky="ew")  # external padding
+            completed_lbl = ttk.Button(scroller, text=f"", padding=(20, 15), style="ListButton.TButton", width=1)
+        completed_lbl.grid(row=i, column=0, padx=(13,15), sticky="ew")  # external padding
         completed_lbl.bind("<Button-1>", lambda e, lbl=completed_lbl, row_id = row_id: helpers.toggle_fill(e, lbl, style, row_id))
 
         label2 = tk.Label(

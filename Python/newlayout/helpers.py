@@ -237,12 +237,12 @@ def date_label_colour(due_date_str):
     days_diff = (due_date - today).days
     
     # Color coding based on the days difference
-    if days_diff < 3:  # Past due
-        return "#e2738c"
-    elif 0 <= days_diff <= 5:  # Due today or within 3 days
-        return "#f6b26b"
+    if days_diff < 1:  # Past due
+        return "#FFb6b6"
+    elif 2 <= days_diff <= 5:  # Due today or within 3 days
+        return "#FFd096"
     else:  # Due in more than 3 days
-        return "#43aa8b"
+        return "#d8f0d8"
     
 def create_new_record(root, scroller, hide_state_dict):
     print("create new")
@@ -294,9 +294,9 @@ def toggle_fill(event, lbl, style, row_id):
     
     # Toggle the style of the label
     if lbl.cget("text") == "":
-        lbl.configure(text="\u2714", padding=(17, 15))
+        lbl.configure(text="\u2714", padding=(10, 15))
     else:
-        lbl.configure(text="", padding=(24,15))
+        lbl.configure(text="", padding=(10,15))
         
     # current_style = lbl.cget("style")
     # lbl.configure(text="\u2713", padding=(17, 15))
